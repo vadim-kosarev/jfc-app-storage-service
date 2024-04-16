@@ -1,23 +1,34 @@
 package dev.vk.jfc.app.storage.appstorage.config;
 
-import dev.vk.jfc.app.storage.appstorage.mq.IndexedDataReceiver;
+import io.minio.MinioClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-
-import javax.sound.midi.Receiver;
 
 @Configuration
 public class AppConfig {
 
     private final static Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
-//    @Bean
-//    @Profile("sender")
-//    public IndexedDataReceiver getAdapter() {
-//        return new IndexedDataReceiver();
-//    }
+
+    @Value("${app.minio.endpoint}")
+    private String minioEndpoint;
+
+    @Value("${app.minio.username}")
+    private String minioUsername;
+
+    @Value("${app.minio.password}")
+    private String minioPassword;
+
+    @Bean
+    public MinioClient getMinioClient() {
+        return MinioClient
+                .builder()
+                .endpoint(minioEndpoint)
+                .credentials(minioUsername, minioPassword)
+                .build();
+    }
 
 }
