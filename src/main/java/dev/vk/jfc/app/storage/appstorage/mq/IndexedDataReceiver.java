@@ -1,5 +1,6 @@
 package dev.vk.jfc.app.storage.appstorage.mq;
 
+import dev.vk.jfc.jfccommon.Jfc;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.AllArgsConstructor;
@@ -11,30 +12,32 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @AllArgsConstructor
 public class IndexedDataReceiver {
 
     private final static Logger logger = LoggerFactory.getLogger(IndexedDataReceiver.class);
-
+    private static final Set<String> imageMessageTypes = Set.of(
+            "processed-frame-faces", "processed-frame-face", "processed-frame");
     private final MinioClient minioClient;
 
     @RabbitListener(queues = "q-indexed-images")
     @SneakyThrows
     public void process(Message message) {
-        String s3Path = String.valueOf(message.getMessageProperties().getHeaders().get("s3Path"));
-        String messageType = String.valueOf(message.getMessageProperties().getHeaders().get("message-type"));
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+        String s3Path = (String) headers.get(Jfc.K_S3PATH);
+        String messageType = (String) headers.get(Jfc.K_MESSAGE_TYPE);
         logger.info("uuid: {} - {} / {}",
-                message.getMessageProperties().getHeaders().get("uuid"),
+                headers.get(Jfc.K_UUID),
                 messageType,
                 s3Path
         );
-        if (
-                !"processed-frame-faces".equals(messageType)
-                        && !"processed-frame-face".equals(messageType)
-                        && !"processed-frame".equals(messageType)
-        ) return;
+
+        if (!imageMessageTypes.contains(messageType)) return;
+
         byte[] body = message.getBody();
         long partSize = 5 * 1024 * 1024;
         minioClient.putObject(PutObjectArgs
