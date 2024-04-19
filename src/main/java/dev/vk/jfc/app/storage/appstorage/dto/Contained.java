@@ -7,11 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "_C")
+@Table(name = "contained")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,15 +19,19 @@ import java.util.UUID;
 public class Contained {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "col_id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "label")
+    @Column(name = "col_label")
     private String label;
 
-    @ManyToOne
-    @JoinColumn(name = "parentID", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "col_parentID", referencedColumnName = "col_id")
     private Contained parent;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "col_id", referencedColumnName = "col_parentID")
+    private Set<Contained> children;
 
 }

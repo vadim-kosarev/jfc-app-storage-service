@@ -19,6 +19,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("io.minio:minio:8.5.9")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.javatuples:javatuples:1.2")
+
     implementation(project(":modules:jfc-common"))
 
     compileOnly("org.projectlombok:lombok")
@@ -26,7 +28,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-	
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.amqp:spring-rabbit-test")
 }
