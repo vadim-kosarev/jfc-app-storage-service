@@ -15,6 +15,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,62 +97,67 @@ public class TestCommand implements CommandLineRunner {
         return child;
     }
 
+    @Transactional
     protected void step03() {
 
+        List<UUID> args = step03_01();
+
+        for (UUID arg : args) {
+            findChildren(arg);
+        }
+
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    protected List<UUID> step03_01() {
         BaseObject base1 = createBaseObject();
         BaseObject base2 = createBaseObject();
         BaseObject base3 = createBaseObject();
 
-        BaseObject child1 = creaetChild(base3);
-        BaseObject child2 = creaetChild(base3);
-        BaseObject child3 = creaetChild(base3);
+        BaseObject child1 = creaetChild(base1);
+        BaseObject child2 = creaetChild(base2);
+        BaseObject child3 = creaetChild(base2);
         BaseObject child4 = creaetChild(base3);
+        BaseObject child5 = creaetChild(base3);
+        BaseObject child6 = creaetChild(base3);
 
         findParent(base3.getId());
         findParent(child2.getId());
         findParent(child3.getId());
         findParent(child4.getId());
 
-        findChildren(base1.getId());
-        findChildren(base2.getId());
-        findChildren(child1.getId());
-
+        return List.of(
+                base1.getId(), base2.getId(), base3.getId(),
+                child1.getId());
     }
 
-    private void findParent(UUID objID) {
-        logger.info("Looking for parent {}", objID);
-        Optional<BaseObject> obj = baseObjectRepository.findById(objID);
-        if (!obj.isPresent()) {
-            logger.info("CAN'T FIND `{}`", objID);
-        } else {
-            BaseObject baseObject = obj.get();
-            logger.info("Found : `{}` / `{}` / `{}`",
-                    (baseObject.getBaseParent() == null) ? "NULL" : baseObject.getBaseParent().getLabel(),
-                    baseObject.getLabel(),
-                    baseObject.getId());
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    protected void findParent(UUID objID) {
+        logger.info("\n================= Looking for parent {}", objID);
+        BaseObject foundObject = baseObjectRepository.findById(objID).orElseThrow();
+        if (foundObject.getBaseParent() != null) {
+            logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`",
+                    foundObject.getBaseParent().getLabel(),
+                    foundObject.getLabel(),
+                    foundObject.getBaseParent().getId());
         }
 
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    private void findChildren(UUID objID) {
-        logger.info("Looking for children {}", objID);
-        Optional<BaseObject> foundObject = baseObjectRepository.findById(objID);
-        if (!foundObject.isPresent()) {
-            logger.info("CAN'T FIND `{}`", objID);
+    protected void findChildren(UUID objID) {
+        logger.info("\n========================= Looking for children {}", objID);
+        BaseObject foundObj = baseObjectRepository.findById(objID).orElseThrow();
+        logger.info("\n\n ======== -------- {}", foundObj.getLabel());
+        Collection<BaseObject> foundChildren = foundObj.getBaseChildren();
+        if (foundChildren == null || foundChildren.isEmpty()) {
+            logger.info("NO Children found for `{}`", foundObj.getLabel());
         } else {
-            BaseObject baseObject = foundObject.get();
-            Collection<BaseObject> foundChildren = baseObject.getBaseChildren();
-            if (foundChildren == null || foundChildren.size() == 0) {
-                logger.info("NO Children found for `{}`", baseObject.getLabel());
-            } else {
-                for (BaseObject child : foundChildren) {
-                    logger.info("Found child: `{}` / `{}`",
-                            child.getLabel(),
-                            child.getId());
-                }
+            for (BaseObject child : foundChildren) {
+                logger.info("Found child: `{}` / `{}`",
+                        child.getLabel(),
+                        child.getId());
             }
-
         }
     }
 
