@@ -31,14 +31,17 @@ public class TestCommand03 implements CommandLineRunner {
         dataItem = repository.save(dataItem);
 
         ArrayList<FloatArrayItem> faceVector = new ArrayList<>();
-        int i = 0;
-        faceVector.add(new FloatArrayItem(new FloatArrayItemId(dataItem.getId(), i++), rnd.nextFloat()));
-        faceVector.add(new FloatArrayItem(new FloatArrayItemId(dataItem.getId(), i++), rnd.nextFloat()));
-        faceVector.add(new FloatArrayItem(new FloatArrayItemId(dataItem.getId(), i++), rnd.nextFloat()));
-        faceVector.add(new FloatArrayItem(new FloatArrayItemId(dataItem.getId(), i++), rnd.nextFloat()));
+
+        for (int i = 0; i < 128; i++) {
+            addFloatItem(faceVector, dataItem, i);
+        }
         dataItem.setFaceVector(faceVector);
 
         repository.save(dataItem);
+    }
+
+    private void addFloatItem(ArrayList<FloatArrayItem> faceVector, ImageDataItem dataItem, int i) {
+        faceVector.add(new FloatArrayItem(new FloatArrayItemId(dataItem.getId(), i), rnd.nextFloat()));
     }
 
     @Override
