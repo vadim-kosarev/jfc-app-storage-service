@@ -1,6 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
 import dev.vk.jfc.app.storage.appstorage.entities.Address;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItem;
 import dev.vk.jfc.app.storage.appstorage.entities.Order;
 import dev.vk.jfc.app.storage.appstorage.repository.AddressRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.OrderRepository;
@@ -22,7 +23,9 @@ public class TestCommand02 implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         runTest_01();
+
     }
+
 
     private void runTest_01() {
         // create Order object
