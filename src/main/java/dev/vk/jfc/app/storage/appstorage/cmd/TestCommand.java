@@ -1,11 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
-import dev.vk.jfc.app.storage.appstorage.dto.BaseObject;
-import dev.vk.jfc.app.storage.appstorage.dto.Child;
-import dev.vk.jfc.app.storage.appstorage.dto.Container;
-import dev.vk.jfc.app.storage.appstorage.repository.BaseObjectRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ChildRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ContainedRepository;
+import dev.vk.jfc.app.storage.appstorage.dto.*;
+import dev.vk.jfc.app.storage.appstorage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.javatuples.Pair;
@@ -29,6 +25,8 @@ public class TestCommand implements CommandLineRunner {
     private final ContainedRepository containedRepository;
     private final ChildRepository childRepository;
     private final BaseObjectRepository baseObjectRepository;
+    private final ProcessedImageObjectRepository processedImageObjectRepository;
+    private final ProcessedImageBndBoxesObjectRepository processedImageBndBoxesObjectRepository;
 
     protected Pair<UUID, UUID> step01_1(Container ssParent) {
         Child c = new Child();
@@ -61,13 +59,6 @@ public class TestCommand implements CommandLineRunner {
         if (opt.isPresent()) {
             Container cont = opt.get();
             logger.info("CONTAINED: {}", cont.getId());
-//            Container parent = cont.getParent();
-//            if (parent != null) {
-//                logger.info(" -> parent: {} / {}", parent.getId(), parent.getLabel());
-//            } else {
-//                logger.info(" -> NO PARENT");
-//            }
-
             Collection<Child> children = cont.getChildren();
             if (children != null) {
                 int sz = children.size();
@@ -126,9 +117,7 @@ public class TestCommand implements CommandLineRunner {
         findParent(child3.getId());
         findParent(child4.getId());
 
-        return List.of(
-                base1.getId(), base2.getId(), base3.getId(),
-                child1.getId());
+        return List.of(base1.getId(), base2.getId(), base3.getId(), child1.getId());
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
@@ -136,10 +125,7 @@ public class TestCommand implements CommandLineRunner {
         logger.info("\n================= Looking for parent {}", objID);
         BaseObject foundObject = baseObjectRepository.findById(objID).orElseThrow();
         if (foundObject.getBaseParent() != null) {
-            logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`",
-                    foundObject.getBaseParent().getLabel(),
-                    foundObject.getLabel(),
-                    foundObject.getBaseParent().getId());
+            logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`", foundObject.getBaseParent().getLabel(), foundObject.getLabel(), foundObject.getBaseParent().getId());
         }
 
     }
@@ -154,18 +140,40 @@ public class TestCommand implements CommandLineRunner {
             logger.info("NO Children found for `{}`", foundObj.getLabel());
         } else {
             for (BaseObject child : foundChildren) {
-                logger.info("Found child: `{}` / `{}`",
-                        child.getLabel(),
-                        child.getId());
+                logger.info("Found child: `{}` / `{}`", child.getLabel(), child.getId());
             }
         }
+    }
+
+    @Transactional
+    protected ProcessedImageObject step04() {
+        ProcessedImageObject obj = createProcessedImage();
+
+//        ProcessedImageBndBoxesObject bndBoxes = new ProcessedImageBndBoxesObject();
+//        bndBoxes.setProcessedImage(obj);
+//        bndBoxes = processedImageBndBoxesObjectRepository.save(bndBoxes);
+//        obj.setBndBoxes(bndBoxes);
+
+        return obj;
+    }
+
+    private ProcessedImageObject createProcessedImage() {
+        ProcessedImageObject obj = new ProcessedImageObject();
+        obj.setS3Path("s3Path://jpgdata/bucket/image.jpg");
+
+//        ProcessedImageBndBoxesObject bndBoxes = new ProcessedImageBndBoxesObject();
+//        obj.setBndBoxes(bndBoxes);
+
+        obj = processedImageObjectRepository.save(obj);
+        return obj;
     }
 
     @Override
     public void run(String... args) throws Exception {
         var res = step01();
         step02(res.getValue0());
-//        step02(res.getValue1());
         step03();
+        step04();
     }
+
 }
