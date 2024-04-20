@@ -20,6 +20,8 @@ dependencies {
     implementation("io.minio:minio:8.5.9")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.javatuples:javatuples:1.2")
+    implementation("org.aspectj:aspectjrt")
+    implementation("com.jcabi:jcabi-aspects:0.25.1")
 
     implementation(project(":modules:jfc-common"))
 

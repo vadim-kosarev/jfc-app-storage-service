@@ -1,6 +1,5 @@
-package dev.vk.jfc.app.storage.appstorage.dto;
+package dev.vk.jfc.app.storage.appstorage.entities;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,14 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tbl_base")
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Inheritance(strategy = InheritanceType.JOINED)
+//@Inheritance(strategy = InheritanceType.JOINED)
 
 @Data
 @NoArgsConstructor

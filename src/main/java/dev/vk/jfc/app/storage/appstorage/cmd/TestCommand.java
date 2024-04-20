@@ -1,6 +1,6 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
-import dev.vk.jfc.app.storage.appstorage.dto.*;
+import dev.vk.jfc.app.storage.appstorage.entities.*;
 import dev.vk.jfc.app.storage.appstorage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import com.jcabi.aspects.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -146,8 +147,8 @@ public class TestCommand implements CommandLineRunner {
     }
 
     @Transactional
-    protected ProcessedImageObject step04() {
-        ProcessedImageObject obj = createProcessedImage();
+    protected ProcessedImage step04() {
+        ProcessedImage obj = createProcessedImage();
 
 //        ProcessedImageBndBoxesObject bndBoxes = new ProcessedImageBndBoxesObject();
 //        bndBoxes.setProcessedImage(obj);
@@ -157,15 +158,20 @@ public class TestCommand implements CommandLineRunner {
         return obj;
     }
 
-    private ProcessedImageObject createProcessedImage() {
-        ProcessedImageObject obj = new ProcessedImageObject();
-        obj.setS3Path("s3Path://jpgdata/bucket/image.jpg");
+    private ProcessedImage createProcessedImage() {
 
-//        ProcessedImageBndBoxesObject bndBoxes = new ProcessedImageBndBoxesObject();
-//        obj.setBndBoxes(bndBoxes);
+        ProcessedImage order = new ProcessedImage();
+        order.setLabel("Processed image");
+        order.setS3Path("s3Path://jpgdata/bucket/image.jpg");
 
-        obj = processedImageObjectRepository.save(obj);
-        return obj;
+        BndBoxesImage billingAddress = new BndBoxesImage();
+        billingAddress.setLabel("Image with bounding boxes");
+
+        order.setImageBndBoxes(billingAddress);
+        billingAddress.setProcessedImage(order);
+
+        order = processedImageObjectRepository.save(order);
+        return order;
     }
 
     @Override
@@ -173,7 +179,23 @@ public class TestCommand implements CommandLineRunner {
         var res = step01();
         step02(res.getValue0());
         step03();
-        step04();
+        UUID objID = step04().getId();
+
+        ProcessedImage obj05 = step05(objID);
+
+        logger.info("/// TestCommand finished");
+    }
+
+
+    @Loggable(name = "step05")
+    private ProcessedImage step05(UUID objID) {
+        ProcessedImage foundObj = processedImageObjectRepository.findById(objID).orElseThrow();
+        BndBoxesImage bndBoxes = foundObj.getImageBndBoxes();
+        logger.info("\n\nbndBoxes: {}\n", bndBoxes.getId());
+
+        ProcessedImage f2 = bndBoxes.getProcessedImage();
+        logger.info("\n\nprocessedImage: {}\n", f2.getId());
+        return foundObj;
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.vk.jfc.app.storage.appstorage.dto;
+package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
