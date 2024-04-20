@@ -12,9 +12,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tbl_base")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-//@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 
 @Data
 @NoArgsConstructor

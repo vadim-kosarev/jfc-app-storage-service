@@ -186,7 +186,6 @@ public class TestCommand implements CommandLineRunner {
         logger.info("/// TestCommand finished");
     }
 
-
     @Loggable(name = "step05")
     private ProcessedImage step05(UUID objID) {
         ProcessedImage foundObj = processedImageObjectRepository.findById(objID).orElseThrow();
