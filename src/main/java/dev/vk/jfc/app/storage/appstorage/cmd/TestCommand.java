@@ -5,16 +5,13 @@ import dev.vk.jfc.app.storage.appstorage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.javatuples.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import com.jcabi.aspects.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -26,8 +23,16 @@ public class TestCommand implements CommandLineRunner {
     private final ContainedRepository containedRepository;
     private final ChildRepository childRepository;
     private final BaseObjectRepository baseObjectRepository;
-    private final ProcessedImageObjectRepository processedImageObjectRepository;
-    private final ProcessedImageBndBoxesObjectRepository processedImageBndBoxesObjectRepository;
+    private final ProcessedImageRepository processedImageRepository;
+    private final BoxedImageRepository boxedImageRepository;
+
+    private static @NotNull BoxedImage getBoxedImage(int faceNoArg, ProcessedImage obj) {
+        BoxedImage bxImage = new BoxedImage();
+        bxImage.setFaceNo(faceNoArg);
+        bxImage.setContainer(obj);
+        bxImage.setLabel("Label:`BoxedImage:%d`".formatted(faceNoArg));
+        return bxImage;
+    }
 
     protected Pair<UUID, UUID> step01_1(Container ssParent) {
         Child c = new Child();
@@ -72,18 +77,18 @@ public class TestCommand implements CommandLineRunner {
         }
     }
 
-    protected BaseObject createBaseObject() {
-        BaseObject parent = new BaseObject();
+    protected BaseEntity createBaseObject() {
+        BaseEntity parent = new BaseEntity();
         parent.setLabel("PARENT - %d".formatted(cnt.incrementAndGet()));
         parent = baseObjectRepository.save(parent);
         logger.info("parent id: {}", parent.getId());
         return parent;
     }
 
-    protected BaseObject creaetChild(BaseObject parent) {
-        BaseObject child = new BaseObject();
+    protected BaseEntity creaetChild(BaseEntity parent) {
+        BaseEntity child = new BaseEntity();
         child.setLabel("CHILD - %d".formatted(cnt.incrementAndGet()));
-        child.setBaseParent(parent);
+        child.setContainer(parent);
         baseObjectRepository.save(child);
         logger.info("Created child: {}", child.getId());
         return child;
@@ -102,16 +107,16 @@ public class TestCommand implements CommandLineRunner {
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected List<UUID> step03_01() {
-        BaseObject base1 = createBaseObject();
-        BaseObject base2 = createBaseObject();
-        BaseObject base3 = createBaseObject();
+        BaseEntity base1 = createBaseObject();
+        BaseEntity base2 = createBaseObject();
+        BaseEntity base3 = createBaseObject();
 
-        BaseObject child1 = creaetChild(base1);
-        BaseObject child2 = creaetChild(base2);
-        BaseObject child3 = creaetChild(base2);
-        BaseObject child4 = creaetChild(base3);
-        BaseObject child5 = creaetChild(base3);
-        BaseObject child6 = creaetChild(base3);
+        BaseEntity child1 = creaetChild(base1);
+        BaseEntity child2 = creaetChild(base2);
+        BaseEntity child3 = creaetChild(base2);
+        BaseEntity child4 = creaetChild(base3);
+        BaseEntity child5 = creaetChild(base3);
+        BaseEntity child6 = creaetChild(base3);
 
         findParent(base3.getId());
         findParent(child2.getId());
@@ -124,9 +129,9 @@ public class TestCommand implements CommandLineRunner {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected void findParent(UUID objID) {
         logger.info("\n================= Looking for parent {}", objID);
-        BaseObject foundObject = baseObjectRepository.findById(objID).orElseThrow();
-        if (foundObject.getBaseParent() != null) {
-            logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`", foundObject.getBaseParent().getLabel(), foundObject.getLabel(), foundObject.getBaseParent().getId());
+        BaseEntity foundObject = baseObjectRepository.findById(objID).orElseThrow();
+        if (foundObject.getContainer() != null) {
+            logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`", foundObject.getContainer().getLabel(), foundObject.getLabel(), foundObject.getContainer().getId());
         }
 
     }
@@ -134,13 +139,13 @@ public class TestCommand implements CommandLineRunner {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected void findChildren(UUID objID) {
         logger.info("\n========================= Looking for children {}", objID);
-        BaseObject foundObj = baseObjectRepository.findById(objID).orElseThrow();
+        BaseEntity foundObj = baseObjectRepository.findById(objID).orElseThrow();
         logger.info("\n\n ======== -------- {}", foundObj.getLabel());
-        Collection<BaseObject> foundChildren = foundObj.getBaseChildren();
+        Collection<BaseEntity> foundChildren = foundObj.getElements();
         if (foundChildren == null || foundChildren.isEmpty()) {
             logger.info("NO Children found for `{}`", foundObj.getLabel());
         } else {
-            for (BaseObject child : foundChildren) {
+            for (BaseEntity child : foundChildren) {
                 logger.info("Found child: `{}` / `{}`", child.getLabel(), child.getId());
             }
         }
@@ -148,30 +153,27 @@ public class TestCommand implements CommandLineRunner {
 
     @Transactional
     protected ProcessedImage step04() {
-        ProcessedImage obj = createProcessedImage();
+        ProcessedImage processedImage = createProcessedImage();
+        processedImage.setLabel("!LABEL:`ProcessedImage`");
 
-//        ProcessedImageBndBoxesObject bndBoxes = new ProcessedImageBndBoxesObject();
-//        bndBoxes.setProcessedImage(obj);
-//        bndBoxes = processedImageBndBoxesObjectRepository.save(bndBoxes);
-//        obj.setBndBoxes(bndBoxes);
+        int faceNoArg = -334455;
+        int a = 10;
 
-        return obj;
+        List<BaseEntity> boxes = new ArrayList<>();
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
+        processedImage.setElements(boxes);
+
+        return processedImageRepository.save(processedImage);
     }
 
     private ProcessedImage createProcessedImage() {
-
         ProcessedImage order = new ProcessedImage();
         order.setLabel("Processed image");
         order.setS3Path("s3Path://jpgdata/bucket/image.jpg");
-
-        BndBoxesImage billingAddress = new BndBoxesImage();
-        billingAddress.setLabel("Image with bounding boxes");
-
-        order.setImageBndBoxes(billingAddress);
-        billingAddress.setProcessedImage(order);
-
-        order = processedImageObjectRepository.save(order);
-        return order;
+        return processedImageRepository.save(order);
     }
 
     @Override
@@ -181,20 +183,8 @@ public class TestCommand implements CommandLineRunner {
         step03();
         UUID objID = step04().getId();
 
-        ProcessedImage obj05 = step05(objID);
-
         logger.info("/// TestCommand finished");
     }
 
-    @Loggable(name = "step05")
-    private ProcessedImage step05(UUID objID) {
-        ProcessedImage foundObj = processedImageObjectRepository.findById(objID).orElseThrow();
-        BndBoxesImage bndBoxes = foundObj.getImageBndBoxes();
-        logger.info("\n\nbndBoxes: {}\n", bndBoxes.getId());
-
-        ProcessedImage f2 = bndBoxes.getProcessedImage();
-        logger.info("\n\nprocessedImage: {}\n", f2.getId());
-        return foundObj;
-    }
 
 }

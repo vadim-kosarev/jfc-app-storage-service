@@ -7,17 +7,14 @@ import lombok.Data;
 @Table(name = "tbl_processed_images")
 
 @Data
-public class ProcessedImage extends HeadersObject {
+public class ProcessedImage extends HeadersEntity {
+
+    private String marker_ProcessedImageObject;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processedImage")
+    private ImageData imageData;
 
     public ProcessedImage() {
         setMessageType("type-ProcessedImageObject");
     }
 
-    private String marker_ProcessedImageObject;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processedImage")
-    private BndBoxesImage imageBndBoxes;
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "processedImage")
-    private ImageData imageData;
 }

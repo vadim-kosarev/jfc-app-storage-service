@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseObject {
+public class BaseEntity {
 
     @Id
     @Column(name = "base_id")
@@ -31,10 +32,10 @@ public class BaseObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "base_object_parent")
-    private BaseObject baseParent;
+    private BaseEntity container;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "baseParent")
-    private Collection<BaseObject> baseChildren;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "container", cascade = CascadeType.ALL)
+    private List<BaseEntity> elements;
 
     @Column(name = "created_dt", nullable = false)
     @Nullable

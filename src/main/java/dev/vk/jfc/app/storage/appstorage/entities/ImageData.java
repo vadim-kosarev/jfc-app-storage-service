@@ -7,10 +7,9 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "tbl_processed_image_data")
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 
 @Data
-public class ImageData extends HeadersObject {
+public class ImageData extends HeadersEntity {
 
     private String marker_ProcessedImageDataObject;
 
@@ -18,10 +17,10 @@ public class ImageData extends HeadersObject {
     @JoinColumn(name = "imgdata_image", referencedColumnName = "base_id")
     private ProcessedImage processedImage;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentImageData")
+    private Collection<ImageDataItem> dataItems;
+
     public ImageData() {
         setMessageType("type-ProcessedImageDataObject");
     }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentImageData")
-    private Collection<ImageDataItem> dataItems;
 }

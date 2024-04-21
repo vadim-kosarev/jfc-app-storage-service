@@ -9,7 +9,7 @@ import java.util.Collection;
 @Table(name = "tbl_image_data_item")
 
 @Data
-public class ImageDataItem extends BaseObject {
+public class ImageDataItem extends BaseEntity {
 
     private Integer faceIndex;
     private Float detection;

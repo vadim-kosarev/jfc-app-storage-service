@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface ProcessedImageObjectRepository extends CrudRepository<ProcessedImage, UUID> {
+public interface ProcessedImageRepository extends CrudRepository<ProcessedImage, UUID> {
     ProcessedImage save (ProcessedImage arg);
 }

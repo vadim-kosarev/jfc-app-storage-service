@@ -22,6 +22,7 @@ dependencies {
     implementation("org.javatuples:javatuples:1.2")
     implementation("org.aspectj:aspectjrt")
     implementation("com.jcabi:jcabi-aspects:0.25.1")
+    implementation("commons-beanutils:commons-beanutils:1.9.4")
 
     implementation(project(":modules:jfc-common"))
 

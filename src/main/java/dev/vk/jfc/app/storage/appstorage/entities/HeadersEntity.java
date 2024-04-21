@@ -11,20 +11,18 @@ import java.time.LocalDateTime;
 @Table(name = "tbl_headers")
 //@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class HeadersObject extends BaseObject {
+public class HeadersEntity extends BaseEntity {
 
     @Column(nullable = true)
     private LocalDateTime brokerTimestamp = LocalDateTime.now();
 
     @Column(nullable = true)
     private LocalDateTime timestamp = LocalDateTime.now();
-
-    @Column(nullable = true)
-    private Integer faceNo;
 
     @Column(nullable = true)
     private Integer frameNo;
