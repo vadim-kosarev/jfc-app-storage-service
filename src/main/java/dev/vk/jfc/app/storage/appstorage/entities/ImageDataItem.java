@@ -1,15 +1,15 @@
 package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Setter;
 
 import java.util.Collection;
 
 @Entity
 @Table(name = "tbl_image_data_item")
 
-@Data
-public class ImageDataItem extends BaseEntity {
+@Setter
+public class ImageDataItem extends HeadersEntity {
 
     private Integer faceIndex;
     private Float detection;

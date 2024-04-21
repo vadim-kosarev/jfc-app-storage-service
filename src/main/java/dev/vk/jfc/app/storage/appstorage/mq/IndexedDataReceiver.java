@@ -1,8 +1,8 @@
 package dev.vk.jfc.app.storage.appstorage.mq;
 
+import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
 import dev.vk.jfc.jfccommon.Jfc;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import jakarta.transaction.NotSupportedException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,9 +19,14 @@ import java.util.Set;
 public class IndexedDataReceiver {
 
     private final static Logger logger = LoggerFactory.getLogger(IndexedDataReceiver.class);
+
+
     private static final Set<String> imageMessageTypes = Set.of(
-            "processed-frame-faces", "processed-frame-face", "processed-frame");
-    private final MinioClient minioClient;
+            Jfc.TP_PROCESSED_FRAME, Jfc.TP_PROCESSED_FRAME_FACES, Jfc.TP_PROCESSED_FRAME_FACE
+    );
+    //private final MinioClient minioClient;
+
+    private final ImageDataStorageService imageDataStorageService;
 
     @RabbitListener(queues = "q-indexed-images")
     @SneakyThrows
@@ -38,8 +42,9 @@ public class IndexedDataReceiver {
 
         if (!imageMessageTypes.contains(messageType)) return;
 
-        byte[] body = message.getBody();
-        long partSize = 5 * 1024 * 1024;
+//        byte[] body = message.getBody();
+//        long partSize = 5 * 1024 * 1024;
+        /*
         minioClient.putObject(PutObjectArgs
                 .builder()
                 .bucket("jpgdata")
@@ -47,6 +52,18 @@ public class IndexedDataReceiver {
                 .object(s3Path)
                 .stream(new ByteArrayInputStream(body), body.length, partSize)
                 .build());
+         */
+
+        if (Jfc.TP_PROCESSED_FRAME.equals(messageType)) {
+            imageDataStorageService.onProcessedImage(message);
+        } else if (Jfc.TP_PROCESSED_FRAME_FACES.equals(messageType)) {
+            imageDataStorageService.onImageData(message);
+        } else if (Jfc.TP_PROCESSED_FRAME_FACE.equals(messageType)) {
+            imageDataStorageService.onImageDataItem(message);
+        } else {
+            throw new NotSupportedException("Not supported: " + messageType);
+        }
     }
+
 
 }

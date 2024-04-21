@@ -2,12 +2,9 @@ package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,9 +14,8 @@ import java.util.UUID;
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Inheritance(strategy = InheritanceType.JOINED)
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Setter
+@Getter
 public class BaseEntity {
 
     @Id
@@ -39,5 +35,6 @@ public class BaseEntity {
 
     @Column(name = "created_dt", nullable = false)
     @Nullable
-    private LocalDateTime created_dt = LocalDateTime.now();
+//    private LocalDateTime created_dt = LocalDateTime.now();
+    private Long created_dt = System.currentTimeMillis();
 }

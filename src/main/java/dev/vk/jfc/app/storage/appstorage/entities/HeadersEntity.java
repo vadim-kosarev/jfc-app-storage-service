@@ -1,11 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tbl_headers")
@@ -13,16 +9,17 @@ import java.time.LocalDateTime;
 //@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Inheritance(strategy = InheritanceType.JOINED)
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
+@Setter
 public class HeadersEntity extends BaseEntity {
 
     @Column(nullable = true)
-    private LocalDateTime brokerTimestamp = LocalDateTime.now();
+//    private LocalDateTime brokerTimestamp = LocalDateTime.now();
+    private Long brokerTimestamp = System.currentTimeMillis();
+
 
     @Column(nullable = true)
-    private LocalDateTime timestamp = LocalDateTime.now();
+//    private LocalDateTime timestamp = LocalDateTime.now();
+    private Long timestamp = System.currentTimeMillis();
 
     @Column(nullable = true)
     private Integer frameNo;
