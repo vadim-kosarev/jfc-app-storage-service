@@ -12,7 +12,7 @@ public class ProcessedImage extends HeadersEntity {
     private ImageData imageData;
 
     public ProcessedImage() {
-        setMessageType("type-ProcessedImageObject");
+        setMessageType("new-type-ProcessedImageObject");
     }
 
 }

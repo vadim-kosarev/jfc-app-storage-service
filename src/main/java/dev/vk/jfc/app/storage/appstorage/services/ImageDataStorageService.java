@@ -59,9 +59,6 @@ public class ImageDataStorageService {
         ImageData imgData = lookForEntity.orElseGet(ImageData::new);
         imgData.setId(uuid);
 
-        if (imgData.getDataItems() == null) {
-            imgData.setDataItems(new ArrayList<>());
-        }
         if (imgData.getElements() == null) {
             imgData.setElements(new ArrayList<>());
         }
@@ -115,7 +112,6 @@ public class ImageDataStorageService {
 
         ImageDataItem dataItem = getImageDataItem(uuid);
         fillInHeaderData(dataItem, headers);
-        parentImageData.getDataItems().add(dataItem);
         parentImageData.getElements().add(dataItem);
 
         imageDataRepository.save(parentImageData);

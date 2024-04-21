@@ -19,10 +19,7 @@ public class ImageData extends HeadersEntity {
     @JoinColumn(name = "imgdata_image", referencedColumnName = "base_id")
     private ProcessedImage processedImage;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentImageData")
-    private Collection<ImageDataItem> dataItems;
-
     public ImageData() {
-        setMessageType("type-ProcessedImageDataObject");
+        setMessageType("new-type-ProcessedImageDataObject");
     }
 }

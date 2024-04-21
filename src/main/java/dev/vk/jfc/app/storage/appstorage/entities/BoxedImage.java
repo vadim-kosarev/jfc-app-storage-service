@@ -14,7 +14,7 @@ public class BoxedImage extends HeadersEntity {
     private Integer faceNo;
 
     public BoxedImage() {
-        setMessageType("x-boxed-image");
+        setMessageType("new-x-boxed-image");
     }
 
 }
