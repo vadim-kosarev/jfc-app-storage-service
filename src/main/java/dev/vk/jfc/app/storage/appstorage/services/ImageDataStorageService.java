@@ -1,34 +1,41 @@
 package dev.vk.jfc.app.storage.appstorage.services;
 
-import dev.vk.jfc.app.storage.appstorage.entities.HeadersEntity;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageData;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItem;
-import dev.vk.jfc.app.storage.appstorage.entities.ProcessedImage;
-import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.vk.jfc.app.storage.appstorage.entities.*;
+import dev.vk.jfc.app.storage.appstorage.repository.ImageEntityRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ProcessedImageRepository;
 import dev.vk.jfc.jfccommon.Jfc;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class ImageDataStorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageService.class);
+
     private final ProcessedImageRepository processedImageRepository;
-    private final ImageDataRepository imageDataRepository;
-    private final ImageDataItemRepository imageDataItemRepository;
+    private final ImageEntityRepository imageEntityRepository;
+    private final IndexedDataRepository indexedDataRepository;
 
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
+    static {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     protected void fillInHeaderData(HeadersEntity image, Map<String, Object> headers) {
+        image.setId(UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID))));
+
         image.setBrokerTimestamp(Long.valueOf(String.valueOf(headers.get(Jfc.K_BROKER_TIMESTAMP))));
         image.setTimestamp(Long.valueOf(String.valueOf(headers.get(Jfc.K_TIMESTAMP))));
 
@@ -45,38 +52,20 @@ public class ImageDataStorageService {
     protected ProcessedImage getRootProcessedImage(UUID uuid) {
         Optional<ProcessedImage> lookForEntity = processedImageRepository.findById(uuid);
         ProcessedImage pImg = lookForEntity.orElseGet(ProcessedImage::new);
-        if (lookForEntity.isPresent()) {
-            return pImg;
-        } else {
-            pImg.setId(uuid);
-            return processedImageRepository.save(pImg);
+        pImg.setId(uuid);
+        if (pImg.getElements() == null) {
+            pImg.setElements(new ArrayList<>());
         }
+        return processedImageRepository.save(pImg);
     }
 
-    @Transactional
-    protected ImageData getImageData(UUID uuid) {
-        Optional<ImageData> lookForEntity = imageDataRepository.findById(uuid);
-        ImageData imgData = lookForEntity.orElseGet(ImageData::new);
-        imgData.setId(uuid);
-
-        if (imgData.getElements() == null) {
-            imgData.setElements(new ArrayList<>());
+    protected IndexedData getIndexedData(UUID uuid) {
+        IndexedData entity = indexedDataRepository.findById(uuid).orElseGet(IndexedData::new);
+        entity.setId(uuid);
+        if (entity.getElements() == null) {
+            entity.setElements(new ArrayList<>());
         }
-        imageDataRepository.save(imgData);
-        return imgData;
-
-    }
-
-    @Transactional
-    protected ImageDataItem getImageDataItem(UUID uuid) {
-        Optional<ImageDataItem> lookForEntity = imageDataItemRepository.findById(uuid);
-        if (lookForEntity.isPresent()) {
-            return lookForEntity.get();
-        } else {
-            ImageDataItem pEnt = new ImageDataItem();
-            pEnt.setId(uuid);
-            return imageDataItemRepository.save(pEnt);
-        }
+        return indexedDataRepository.save(entity);
     }
 
     @Transactional
@@ -89,31 +78,41 @@ public class ImageDataStorageService {
     }
 
     @Transactional
-    public void onImageData(Message message) {
+    public void onFrameFacesImage(Message message) {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
-
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-        ProcessedImage parentImage = getRootProcessedImage(parentUuid);
+        ProcessedImage processedImage = getRootProcessedImage(parentUuid);
 
-        ImageData imgData = getImageData(uuid);
-        fillInHeaderData(imgData, headers);
-        imgData.setProcessedImage(parentImage);
-        imageDataRepository.save(imgData);
+        tmp_ImageEntity imageEntity = imageEntityRepository.findById(uuid).orElseGet(tmp_ImageEntity::new);
+        fillInHeaderData(imageEntity, headers);
+        imageEntity = imageEntityRepository.save(imageEntity);
+
+        processedImage.getElements().add(imageEntity);
+        processedImageRepository.save(processedImage);
+
     }
 
     @Transactional
-    public void onImageDataItem(Message message) {
+    @SneakyThrows
+    public void onIndexedData(Message message) {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
-
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-        ImageData parentImageData = getImageData(parentUuid);
+        ProcessedImage processedImage = getRootProcessedImage(parentUuid);
 
-        ImageDataItem dataItem = getImageDataItem(uuid);
-        fillInHeaderData(dataItem, headers);
-        parentImageData.getElements().add(dataItem);
+        IndexedData indexedData = processedImage.getIndexedData();
+        if (null == indexedData) {
+            indexedData = getIndexedData(uuid);
+            indexedData.setLabel("**Label: `IndexedData` / %s".formatted(uuid));
+            indexedData.setContainer(processedImage);
+            processedImage.setIndexedData(indexedData);
+        }
+        processedImageRepository.save(processedImage);
 
-        imageDataRepository.save(parentImageData);
+        byte[] bBody = message.getBody();
+        String strBody = new String(bBody);
+        logger.debug("Processing {}", strBody);
+
     }
 }

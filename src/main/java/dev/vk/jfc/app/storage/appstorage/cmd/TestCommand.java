@@ -28,6 +28,7 @@ public class TestCommand implements CommandLineRunner {
 
     private static @NotNull BoxedImage getBoxedImage(int faceNoArg, ProcessedImage obj) {
         BoxedImage bxImage = new BoxedImage();
+        bxImage.setId(UUID.randomUUID());
         bxImage.setFaceNo(faceNoArg);
         bxImage.setContainer(obj);
         bxImage.setLabel("Label:`BoxedImage:%d`".formatted(faceNoArg));
@@ -80,6 +81,7 @@ public class TestCommand implements CommandLineRunner {
     protected BaseEntity createBaseObject() {
         BaseEntity parent = new BaseEntity();
         parent.setLabel("PARENT - %d".formatted(cnt.incrementAndGet()));
+        parent.setId(UUID.randomUUID());
         parent = baseObjectRepository.save(parent);
         logger.info("parent id: {}", parent.getId());
         return parent;
@@ -87,6 +89,7 @@ public class TestCommand implements CommandLineRunner {
 
     protected BaseEntity creaetChild(BaseEntity parent) {
         BaseEntity child = new BaseEntity();
+        child.setId(UUID.randomUUID());
         child.setLabel("CHILD - %d".formatted(cnt.incrementAndGet()));
         child.setContainer(parent);
         baseObjectRepository.save(child);
@@ -128,7 +131,7 @@ public class TestCommand implements CommandLineRunner {
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected void findParent(UUID objID) {
-        logger.info("\n================= Looking for parent {}", objID);
+        logger.info("===== Looking for parent {}", objID);
         BaseEntity foundObject = baseObjectRepository.findById(objID).orElseThrow();
         if (foundObject.getContainer() != null) {
             logger.info("Found : parent:`{}` / thisObject:`{}` / parentID`{}`", foundObject.getContainer().getLabel(), foundObject.getLabel(), foundObject.getContainer().getId());
@@ -138,9 +141,9 @@ public class TestCommand implements CommandLineRunner {
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected void findChildren(UUID objID) {
-        logger.info("\n========================= Looking for children {}", objID);
+        logger.info("==== Looking for children {}", objID);
         BaseEntity foundObj = baseObjectRepository.findById(objID).orElseThrow();
-        logger.info("\n\n ======== -------- {}", foundObj.getLabel());
+        logger.info(" ==== -------- {}", foundObj.getLabel());
         Collection<BaseEntity> foundChildren = foundObj.getElements();
         if (foundChildren == null || foundChildren.isEmpty()) {
             logger.info("NO Children found for `{}`", foundObj.getLabel());
@@ -171,6 +174,7 @@ public class TestCommand implements CommandLineRunner {
 
     private ProcessedImage createProcessedImage() {
         ProcessedImage order = new ProcessedImage();
+        order.setId(UUID.randomUUID());
         order.setLabel("Processed image");
         order.setS3Path("s3Path://jpgdata/bucket/image.jpg");
         return processedImageRepository.save(order);

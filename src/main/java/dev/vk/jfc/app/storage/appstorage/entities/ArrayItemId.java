@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FloatArrayItemId implements Serializable {
+public class ArrayItemId implements Serializable {
     private UUID objID;
     private Integer ind;
 }

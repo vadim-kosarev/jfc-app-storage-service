@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
-
 @Entity
 @Table(name = "tbl_processed_image_data")
 
 @Setter
 @Getter
-public class ImageData extends HeadersEntity {
+public class ImageDataEntity extends HeadersEntity {
 
     private String marker_ProcessedImageDataObject;
 
@@ -19,7 +17,7 @@ public class ImageData extends HeadersEntity {
     @JoinColumn(name = "imgdata_image", referencedColumnName = "base_id")
     private ProcessedImage processedImage;
 
-    public ImageData() {
+    public ImageDataEntity() {
         setMessageType("new-type-ProcessedImageDataObject");
     }
 }

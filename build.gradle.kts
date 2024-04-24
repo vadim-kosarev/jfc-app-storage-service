@@ -17,23 +17,29 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-amqp")
-    implementation("io.minio:minio:8.5.9")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("io.minio:minio:8.5.9")
     implementation("org.javatuples:javatuples:1.2")
     implementation("org.aspectj:aspectjrt")
     implementation("com.jcabi:jcabi-aspects:0.25.1")
-    implementation("commons-beanutils:commons-beanutils:1.9.4")
+//    implementation("commons-beanutils:commons-beanutils:1.9.4")
 
     implementation(project(":modules:jfc-common"))
 
     compileOnly("org.projectlombok:lombok")
 
     annotationProcessor("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
 
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.amqp:spring-rabbit-test")
+    testImplementation("org.projectlombok:lombok")
+//    testImplementation("io.minio:minio:8.5.9")
+//    testImplementation("org.javatuples:javatuples:1.2")
+//    testImplementation("org.aspectj:aspectjrt")
+//    testImplementation("com.jcabi:jcabi-aspects:0.25.1")
 }
 
 tasks.withType<Test> {

@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.Collection;
 
 @Entity
-@Table(name = "tbl_image_data_item")
+@Table(name = "tbl_indexed_data_item")
 
 @Setter
 public class ImageDataItem extends HeadersEntity {
@@ -16,7 +16,7 @@ public class ImageDataItem extends HeadersEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "col_parent_image_data", referencedColumnName = "base_id")
-    private ImageData parentImageData;
+    private ImageDataEntity parentImageData;
 
     private Integer imgBox_p1_x;
     private Integer imgBox_p1_y;

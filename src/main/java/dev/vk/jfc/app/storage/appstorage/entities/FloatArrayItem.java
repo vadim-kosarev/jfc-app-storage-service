@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class FloatArrayItem {
 
     @EmbeddedId
-    private FloatArrayItemId itemId;
+    private ArrayItemId itemId;
 
     private float val;
 }

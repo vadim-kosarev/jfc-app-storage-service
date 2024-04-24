@@ -20,7 +20,7 @@ public class BaseEntity {
 
     @Id
     @Column(name = "base_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "base_label")
