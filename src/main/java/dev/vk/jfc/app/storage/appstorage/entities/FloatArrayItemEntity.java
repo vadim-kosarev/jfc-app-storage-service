@@ -18,5 +18,5 @@ public class FloatArrayItemEntity {
     @EmbeddedId
     private ArrayItemId itemId;
 
-    private float val;
+    private Float val;
 }

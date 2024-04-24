@@ -1,14 +1,18 @@
 package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_indexed_data_items")
 
 @Setter
+@Getter
 public class ImageDataItemEntity extends HeadersEntity {
 
     private Integer faceIndex;
@@ -24,6 +28,9 @@ public class ImageDataItemEntity extends HeadersEntity {
     private Integer imgBox_p2_y;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId.objID")
-    private Collection<FloatArrayItemEntity> faceVector;
+    private List<FloatArrayItemEntity> faceVector;
 
+    public ImageDataItemEntity() {
+        faceVector = new ArrayList<>();
+    }
 }

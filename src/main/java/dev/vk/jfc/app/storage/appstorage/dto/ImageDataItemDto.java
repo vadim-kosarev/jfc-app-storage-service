@@ -9,5 +9,5 @@ public class ImageDataItemDto {
     private Integer faceIndex;
     private Float detection;
     private FaceBox faceBox;
-    private double[] faceVector;
+    private float[] faceVector;
 }
