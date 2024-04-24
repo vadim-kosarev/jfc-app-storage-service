@@ -5,10 +5,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "tbl_headers")
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Inheritance(strategy = InheritanceType.JOINED)
-
 @Setter
 public class HeadersEntity extends BaseEntity {
 

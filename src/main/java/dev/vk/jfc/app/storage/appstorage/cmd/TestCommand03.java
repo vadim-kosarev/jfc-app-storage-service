@@ -1,9 +1,9 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
-import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItem;
-import dev.vk.jfc.app.storage.appstorage.entities.ArrayItemId;
+import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageDataEntity;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItem;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import lombok.AllArgsConstructor;
@@ -28,9 +28,9 @@ public class TestCommand03 implements CommandLineRunner {
         imgData.setLabel("Label: TEST: ImageData");
         imgData = imageDataRepository.save(imgData);
 
-        ImageDataItem dataItem = new ImageDataItem();
+        ImageDataItemEntity dataItem = new ImageDataItemEntity();
         dataItem.setId(UUID.randomUUID());
-        dataItem.setLabel("Label: TEST: ImageDataItem");
+        dataItem.setLabel("Label: TEST: ImageDataItemEntity");
         dataItem.setFaceIndex(777);
         dataItem.setImgBox_p1_x(10);
         dataItem.setImgBox_p1_y(10);
@@ -41,7 +41,7 @@ public class TestCommand03 implements CommandLineRunner {
 
         dataItem = repository.save(dataItem);
 
-        ArrayList<FloatArrayItem> faceVector = new ArrayList<>();
+        ArrayList<FloatArrayItemEntity> faceVector = new ArrayList<>();
 
         for (int i = 0; i < 128; i++) {
             addFloatItem(faceVector, dataItem, i);
@@ -51,8 +51,8 @@ public class TestCommand03 implements CommandLineRunner {
         repository.save(dataItem);
     }
 
-    private void addFloatItem(ArrayList<FloatArrayItem> faceVector, ImageDataItem dataItem, int i) {
-        faceVector.add(new FloatArrayItem(new ArrayItemId(dataItem.getId(), i), rnd.nextFloat()));
+    private void addFloatItem(ArrayList<FloatArrayItemEntity> faceVector, ImageDataItemEntity dataItem, int i) {
+        faceVector.add(new FloatArrayItemEntity(new ArrayItemId(dataItem.getId(), i), rnd.nextFloat()));
     }
 
     @Override

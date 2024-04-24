@@ -1,6 +1,8 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
 import dev.vk.jfc.app.storage.appstorage.entities.*;
+import dev.vk.jfc.app.storage.appstorage.entities.samples.Child;
+import dev.vk.jfc.app.storage.appstorage.entities.samples.Container;
 import dev.vk.jfc.app.storage.appstorage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -26,12 +28,12 @@ public class TestCommand implements CommandLineRunner {
     private final ProcessedImageRepository processedImageRepository;
     private final BoxedImageRepository boxedImageRepository;
 
-    private static @NotNull BoxedImage getBoxedImage(int faceNoArg, ProcessedImage obj) {
-        BoxedImage bxImage = new BoxedImage();
+    private static @NotNull BoxedImageEntity getBoxedImage(int faceNoArg, ImageEntity obj) {
+        BoxedImageEntity bxImage = new BoxedImageEntity();
         bxImage.setId(UUID.randomUUID());
         bxImage.setFaceNo(faceNoArg);
         bxImage.setContainer(obj);
-        bxImage.setLabel("Label:`BoxedImage:%d`".formatted(faceNoArg));
+        bxImage.setLabel("Label:`BoxedImageEntity:%d`".formatted(faceNoArg));
         return bxImage;
     }
 
@@ -155,25 +157,25 @@ public class TestCommand implements CommandLineRunner {
     }
 
     @Transactional
-    protected ProcessedImage step04() {
-        ProcessedImage processedImage = createProcessedImage();
-        processedImage.setLabel("!LABEL:`ProcessedImage`");
+    protected ImageEntity step04() {
+        ImageEntity imageEntity = createProcessedImage();
+        imageEntity.setLabel("!LABEL:`ImageEntity`");
 
         int faceNoArg = -334455;
         int a = 10;
 
         List<BaseEntity> boxes = new ArrayList<>();
-        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
-        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
-        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
-        boxes.add(getBoxedImage(faceNoArg + (a+=10), processedImage));
-        processedImage.setElements(boxes);
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
+        boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
+        imageEntity.setElements(boxes);
 
-        return processedImageRepository.save(processedImage);
+        return processedImageRepository.save(imageEntity);
     }
 
-    private ProcessedImage createProcessedImage() {
-        ProcessedImage order = new ProcessedImage();
+    private ImageEntity createProcessedImage() {
+        ImageEntity order = new ImageEntity();
         order.setId(UUID.randomUUID());
         order.setLabel("Processed image");
         order.setS3Path("s3Path://jpgdata/bucket/image.jpg");

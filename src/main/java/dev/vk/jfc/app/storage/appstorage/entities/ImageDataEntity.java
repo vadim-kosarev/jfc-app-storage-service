@@ -15,7 +15,7 @@ public class ImageDataEntity extends HeadersEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imgdata_image", referencedColumnName = "base_id")
-    private ProcessedImage processedImage;
+    private ImageEntity imageEntity;
 
     public ImageDataEntity() {
         setMessageType("new-type-ProcessedImageDataObject");

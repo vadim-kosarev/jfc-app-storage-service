@@ -20,7 +20,6 @@ public class BaseEntity {
 
     @Id
     @Column(name = "base_id")
-//    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "base_label")
@@ -35,6 +34,5 @@ public class BaseEntity {
 
     @Column(name = "created_dt", nullable = false)
     @Nullable
-//    private LocalDateTime created_dt = LocalDateTime.now();
     private Long created_dt = System.currentTimeMillis();
 }

@@ -6,10 +6,10 @@ import lombok.Setter;
 import java.util.Collection;
 
 @Entity
-@Table(name = "tbl_indexed_data_item")
+@Table(name = "tbl_indexed_data_items")
 
 @Setter
-public class ImageDataItem extends HeadersEntity {
+public class ImageDataItemEntity extends HeadersEntity {
 
     private Integer faceIndex;
     private Float detection;
@@ -24,6 +24,6 @@ public class ImageDataItem extends HeadersEntity {
     private Integer imgBox_p2_y;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId.objID")
-    private Collection<FloatArrayItem> faceVector;
+    private Collection<FloatArrayItemEntity> faceVector;
 
 }

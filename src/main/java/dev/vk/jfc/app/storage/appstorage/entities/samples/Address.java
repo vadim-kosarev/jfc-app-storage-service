@@ -1,10 +1,10 @@
-package dev.vk.jfc.app.storage.appstorage.entities;
+package dev.vk.jfc.app.storage.appstorage.entities.samples;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "address")
+@Table(name = "__tst_address")
 @Data
 public class Address {
     @Id

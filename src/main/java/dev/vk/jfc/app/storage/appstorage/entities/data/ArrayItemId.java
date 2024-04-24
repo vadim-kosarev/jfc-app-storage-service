@@ -1,4 +1,4 @@
-package dev.vk.jfc.app.storage.appstorage.entities;
+package dev.vk.jfc.app.storage.appstorage.entities.data;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package dev.vk.jfc.app.storage.appstorage.entities;
+package dev.vk.jfc.app.storage.appstorage.entities.samples;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "__tst_orders")
 @Data
 public class Order {
     @Id

@@ -1,20 +1,27 @@
 package dev.vk.jfc.app.storage.appstorage;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItem;
+import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageDataEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.ArrayList;
 import java.util.List;
 
+@SpringBootTest
 public class JsonTests {
 
     private final static Logger logger = LoggerFactory.getLogger(JsonTests.class);
@@ -24,33 +31,57 @@ public class JsonTests {
     @BeforeAll
     static void setUp() {
         objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     }
+/*
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        TypeMap<ImageDataItemDto, ImageDataItemEntity> typeMap =
+                modelMapper.getTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
+        if (null == typeMap) modelMapper.createTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
+
+        typeMap.addMapping(src -> src.getFaceBox(), (dest, v) -> {
+            logger.info("Adding mapping: ...");
+        });
+
+        return modelMapper;
+    }
+
+ */
+    @Autowired
+    private ModelMapper modelWrapper;
 
     @Test
     @SneakyThrows
     void testJSON_Serialize() {
-        ImageDataItem entity = new ImageDataItem();
+        ImageDataItemEntity entity = new ImageDataItemEntity();
         entity.setFaceIndex(999);
         entity.setDetection(0.7777777f);
 
         String jsonStr = objectMapper.writeValueAsString(entity);
         logger.info("Json:\n{}", jsonStr);
+
     }
 
     @Test
     @SneakyThrows
     void testJSON_00() {
         URL dataSrc = new URL(null, "classpath:json-test-00.json", new Handler(ClassLoader.getSystemClassLoader()));
-        Object obj  = objectMapper.readValue(dataSrc, ImageDataItem.class);
-        logger.info("Object: {}", obj);
+        ImageDataItemDto obj = objectMapper.readValue(dataSrc, ImageDataItemDto.class);
+        logger.info("+++ Object: {}", obj);
+
+        ImageDataItemEntity entity = modelWrapper.map(obj, ImageDataItemEntity.class);
+        logger.info("+++ Mapped entity: {}", entity);
+
     }
 
     @SneakyThrows
     @Test
     void testJSON() {
         URL dataSrc = new URL(null, "classpath:json-test-01.json", new Handler(ClassLoader.getSystemClassLoader()));
-        List<Object> obj  = objectMapper.readValue(dataSrc, ArrayList.class);
+        List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc, List.class);
         logger.info("obj: {}", obj);
     }
 

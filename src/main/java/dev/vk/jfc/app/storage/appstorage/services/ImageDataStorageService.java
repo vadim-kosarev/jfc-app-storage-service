@@ -3,7 +3,7 @@ package dev.vk.jfc.app.storage.appstorage.services;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
-import dev.vk.jfc.app.storage.appstorage.repository.ImageEntityRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ProcessedImageRepository;
 import dev.vk.jfc.jfccommon.Jfc;
@@ -24,8 +24,8 @@ public class ImageDataStorageService {
     private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageService.class);
 
     private final ProcessedImageRepository processedImageRepository;
-    private final ImageEntityRepository imageEntityRepository;
     private final IndexedDataRepository indexedDataRepository;
+    private final ImageDataRepository imageDataRepository;
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -49,9 +49,9 @@ public class ImageDataStorageService {
     }
 
     @Transactional
-    protected ProcessedImage getRootProcessedImage(UUID uuid) {
-        Optional<ProcessedImage> lookForEntity = processedImageRepository.findById(uuid);
-        ProcessedImage pImg = lookForEntity.orElseGet(ProcessedImage::new);
+    protected ImageEntity getRootProcessedImage(UUID uuid) {
+        Optional<ImageEntity> lookForEntity = processedImageRepository.findById(uuid);
+        ImageEntity pImg = lookForEntity.orElseGet(ImageEntity::new);
         pImg.setId(uuid);
         if (pImg.getElements() == null) {
             pImg.setElements(new ArrayList<>());
@@ -59,8 +59,8 @@ public class ImageDataStorageService {
         return processedImageRepository.save(pImg);
     }
 
-    protected IndexedData getIndexedData(UUID uuid) {
-        IndexedData entity = indexedDataRepository.findById(uuid).orElseGet(IndexedData::new);
+    protected IndexedDataEntity getIndexedData(UUID uuid) {
+        IndexedDataEntity entity = indexedDataRepository.findById(uuid).orElseGet(IndexedDataEntity::new);
         entity.setId(uuid);
         if (entity.getElements() == null) {
             entity.setElements(new ArrayList<>());
@@ -72,9 +72,9 @@ public class ImageDataStorageService {
     public void onProcessedImage(Message message) {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
-        ProcessedImage processedImage = getRootProcessedImage(uuid);
-        fillInHeaderData(processedImage, headers);
-        processedImageRepository.save(processedImage);
+        ImageEntity imageEntity = getRootProcessedImage(uuid);
+        fillInHeaderData(imageEntity, headers);
+        processedImageRepository.save(imageEntity);
     }
 
     @Transactional
@@ -82,15 +82,14 @@ public class ImageDataStorageService {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-        ProcessedImage processedImage = getRootProcessedImage(parentUuid);
+        ImageEntity processedImageEntity = getRootProcessedImage(parentUuid);
 
-        tmp_ImageEntity imageEntity = imageEntityRepository.findById(uuid).orElseGet(tmp_ImageEntity::new);
+        ImageDataEntity imageEntity = imageDataRepository.findById(uuid).orElseGet(ImageDataEntity::new);
         fillInHeaderData(imageEntity, headers);
-        imageEntity = imageEntityRepository.save(imageEntity);
+        imageEntity = imageDataRepository.save(imageEntity);
 
-        processedImage.getElements().add(imageEntity);
-        processedImageRepository.save(processedImage);
-
+        processedImageEntity.getElements().add(imageEntity);
+        processedImageRepository.save(processedImageEntity);
     }
 
     @Transactional
@@ -99,16 +98,16 @@ public class ImageDataStorageService {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-        ProcessedImage processedImage = getRootProcessedImage(parentUuid);
+        ImageEntity imageEntity = getRootProcessedImage(parentUuid);
 
-        IndexedData indexedData = processedImage.getIndexedData();
-        if (null == indexedData) {
-            indexedData = getIndexedData(uuid);
-            indexedData.setLabel("**Label: `IndexedData` / %s".formatted(uuid));
-            indexedData.setContainer(processedImage);
-            processedImage.setIndexedData(indexedData);
+        IndexedDataEntity indexedDataEntity = imageEntity.getIndexedDataEntity();
+        if (null == indexedDataEntity) {
+            indexedDataEntity = getIndexedData(uuid);
+            indexedDataEntity.setLabel("**Label: `IndexedDataEntity` / %s".formatted(uuid));
+            indexedDataEntity.setContainer(imageEntity);
+            imageEntity.setIndexedDataEntity(indexedDataEntity);
         }
-        processedImageRepository.save(processedImage);
+        processedImageRepository.save(imageEntity);
 
         byte[] bBody = message.getBody();
         String strBody = new String(bBody);

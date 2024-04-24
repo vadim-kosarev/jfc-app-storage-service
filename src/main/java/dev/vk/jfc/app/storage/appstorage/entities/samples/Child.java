@@ -1,4 +1,4 @@
-package dev.vk.jfc.app.storage.appstorage.entities;
+package dev.vk.jfc.app.storage.appstorage.entities.samples;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tbl_children")
+@Table(name = "__tst_tbl_children")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

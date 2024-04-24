@@ -1,8 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
-import dev.vk.jfc.app.storage.appstorage.entities.Address;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItem;
-import dev.vk.jfc.app.storage.appstorage.entities.Order;
+import dev.vk.jfc.app.storage.appstorage.entities.samples.Address;
+import dev.vk.jfc.app.storage.appstorage.entities.samples.Order;
 import dev.vk.jfc.app.storage.appstorage.repository.AddressRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;

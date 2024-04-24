@@ -1,4 +1,4 @@
-package dev.vk.jfc.app.storage.appstorage.entities;
+package dev.vk.jfc.app.storage.appstorage.dto;
 
 import lombok.Data;
 

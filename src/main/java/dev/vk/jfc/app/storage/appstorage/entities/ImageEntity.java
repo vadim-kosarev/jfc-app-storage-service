@@ -8,12 +8,12 @@ import lombok.Setter;
 @Table(name = "tbl_processed_images")
 @Getter
 @Setter
-public class ProcessedImage extends HeadersEntity {
+public class ImageEntity extends HeadersEntity {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentImage")
-    private IndexedData indexedData;
+    private IndexedDataEntity indexedDataEntity;
 
-    public ProcessedImage() {
+    public ImageEntity() {
         setMessageType("new-type-ProcessedImageObject");
     }
 
