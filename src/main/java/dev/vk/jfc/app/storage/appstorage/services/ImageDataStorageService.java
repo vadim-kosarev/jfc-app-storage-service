@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
+import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
@@ -135,10 +136,22 @@ public class ImageDataStorageService {
                 entity.setId(UUID.randomUUID());
             }
             entity.setParentImageData(indexedDataEntity);
+
+            // ========================================================
+            for (int i = 0; i < dto.getFaceVector().length; i++) {
+                entity.getFaceVector().add(
+                        new FloatArrayItemEntity(
+                                new ArrayItemId(entity.getId(), i), dto.getFaceVector()[i]
+                        )
+                );
+            }
+
+            // ========================================================
+
             imageDataItemRepository.save(entity);
 
         }
 
-        indexedDataRepository.save(indexedDataEntity);
+//        indexedDataRepository.save(indexedDataEntity);
     }
 }
