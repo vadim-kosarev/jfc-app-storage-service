@@ -15,8 +15,8 @@ public class ImageDataItemEntity extends HeadersEntity {
     private Float detection;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "col_parent_image_data", referencedColumnName = "base_id")
-    private ImageDataEntity parentImageData;
+    @JoinColumn(name = "col_parent_image", referencedColumnName = "base_id")
+    private IndexedDataEntity parentImageData;
 
     private Integer imgBox_p1_x;
     private Integer imgBox_p1_y;

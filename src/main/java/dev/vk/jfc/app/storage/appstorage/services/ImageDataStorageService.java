@@ -1,8 +1,11 @@
 package dev.vk.jfc.app.storage.appstorage.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
+import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ProcessedImageRepository;
@@ -10,6 +13,7 @@ import dev.vk.jfc.jfccommon.Jfc;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
@@ -22,16 +26,17 @@ import java.util.*;
 public class ImageDataStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageService.class);
-
-    private final ProcessedImageRepository processedImageRepository;
-    private final IndexedDataRepository indexedDataRepository;
-    private final ImageDataRepository imageDataRepository;
-
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
+
+    private final ProcessedImageRepository processedImageRepository;
+    private final IndexedDataRepository indexedDataRepository;
+    private final ImageDataRepository imageDataRepository;
+    private final ModelMapper modelMapper;
+    private final ImageDataItemRepository imageDataItemRepository;
 
     protected void fillInHeaderData(HeadersEntity image, Map<String, Object> headers) {
         image.setId(UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID))));
@@ -59,6 +64,7 @@ public class ImageDataStorageService {
         return processedImageRepository.save(pImg);
     }
 
+    @Transactional
     protected IndexedDataEntity getIndexedData(UUID uuid) {
         IndexedDataEntity entity = indexedDataRepository.findById(uuid).orElseGet(IndexedDataEntity::new);
         entity.setId(uuid);
@@ -95,6 +101,7 @@ public class ImageDataStorageService {
     @Transactional
     @SneakyThrows
     public void onIndexedData(Message message) {
+
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
@@ -107,11 +114,31 @@ public class ImageDataStorageService {
             indexedDataEntity.setContainer(imageEntity);
             imageEntity.setIndexedDataEntity(indexedDataEntity);
         }
-        processedImageRepository.save(imageEntity);
+        indexedDataRepository.save(indexedDataEntity);
 
         byte[] bBody = message.getBody();
         String strBody = new String(bBody);
         logger.debug("Processing {}", strBody);
 
+        List<ImageDataItemDto> theList = objectMapper.readValue(strBody,
+                new TypeReference<List<ImageDataItemDto>>() {
+                }
+        );
+
+        for (ImageDataItemDto dto : theList) {
+            logger.debug("Element: {} ", dto);
+
+            ImageDataItemEntity entity = modelMapper.map(dto, ImageDataItemEntity.class);
+            logger.debug(" --> Mapped to: {}", entity);
+
+            if (entity.getId() == null) {
+                entity.setId(UUID.randomUUID());
+            }
+            entity.setParentImageData(indexedDataEntity);
+            imageDataItemRepository.save(entity);
+
+        }
+
+        indexedDataRepository.save(indexedDataEntity);
     }
 }

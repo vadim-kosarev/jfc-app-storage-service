@@ -21,6 +21,7 @@ public class TestCommand02 implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (true) return;
         runTest_01();
 
     }

@@ -1,15 +1,13 @@
 package dev.vk.jfc.app.storage.appstorage;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,32 +24,14 @@ public class JsonTests {
 
     private final static Logger logger = LoggerFactory.getLogger(JsonTests.class);
 
-    private static ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private ModelMapper modelWrapper;
 
     @BeforeAll
     static void setUp() {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     }
-/*
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-
-        TypeMap<ImageDataItemDto, ImageDataItemEntity> typeMap =
-                modelMapper.getTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
-        if (null == typeMap) modelMapper.createTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
-
-        typeMap.addMapping(src -> src.getFaceBox(), (dest, v) -> {
-            logger.info("Adding mapping: ...");
-        });
-
-        return modelMapper;
-    }
-
- */
-    @Autowired
-    private ModelMapper modelWrapper;
 
     @Test
     @SneakyThrows
@@ -81,7 +61,10 @@ public class JsonTests {
     @Test
     void testJSON() {
         URL dataSrc = new URL(null, "classpath:json-test-01.json", new Handler(ClassLoader.getSystemClassLoader()));
-        List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc, List.class);
+        //List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc, List.class);
+        List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc,
+                new TypeReference<List<ImageDataItemDto>>() {}
+        );
         logger.info("obj: {}", obj);
     }
 

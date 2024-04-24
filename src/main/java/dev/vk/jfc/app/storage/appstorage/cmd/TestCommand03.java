@@ -1,11 +1,13 @@
 package dev.vk.jfc.app.storage.appstorage.cmd;
 
 import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageDataEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -20,13 +22,14 @@ public class TestCommand03 implements CommandLineRunner {
 
     private final ImageDataItemRepository repository;
     private final ImageDataRepository imageDataRepository;
+    private final IndexedDataRepository indexedDataRepository;
     private final Random rnd = new Random();
 
     private void runTest_02() {
-        ImageDataEntity imgData = new ImageDataEntity();
+        IndexedDataEntity imgData = new IndexedDataEntity();
         imgData.setId(UUID.randomUUID());
         imgData.setLabel("Label: TEST: ImageData");
-        imgData = imageDataRepository.save(imgData);
+        imgData = indexedDataRepository.save(imgData);
 
         ImageDataItemEntity dataItem = new ImageDataItemEntity();
         dataItem.setId(UUID.randomUUID());
@@ -57,6 +60,7 @@ public class TestCommand03 implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (true) return;
         runTest_02();
     }
 }

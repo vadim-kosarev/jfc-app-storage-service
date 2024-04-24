@@ -26,16 +26,6 @@ public class TestCommand implements CommandLineRunner {
     private final ChildRepository childRepository;
     private final BaseObjectRepository baseObjectRepository;
     private final ProcessedImageRepository processedImageRepository;
-    private final BoxedImageRepository boxedImageRepository;
-
-    private static @NotNull BoxedImageEntity getBoxedImage(int faceNoArg, ImageEntity obj) {
-        BoxedImageEntity bxImage = new BoxedImageEntity();
-        bxImage.setId(UUID.randomUUID());
-        bxImage.setFaceNo(faceNoArg);
-        bxImage.setContainer(obj);
-        bxImage.setLabel("Label:`BoxedImageEntity:%d`".formatted(faceNoArg));
-        return bxImage;
-    }
 
     protected Pair<UUID, UUID> step01_1(Container ssParent) {
         Child c = new Child();
@@ -165,10 +155,12 @@ public class TestCommand implements CommandLineRunner {
         int a = 10;
 
         List<BaseEntity> boxes = new ArrayList<>();
+        /*
         boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
         boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
         boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
         boxes.add(getBoxedImage(faceNoArg + (a+=10), imageEntity));
+         */
         imageEntity.setElements(boxes);
 
         return processedImageRepository.save(imageEntity);
@@ -184,6 +176,7 @@ public class TestCommand implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (true) return;
         var res = step01();
         step02(res.getValue0());
         step03();

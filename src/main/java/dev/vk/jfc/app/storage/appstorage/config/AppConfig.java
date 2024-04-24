@@ -38,21 +38,6 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-
-
-        /*
-        TypeMap<ImageDataItemDto, ImageDataItemEntity> typeMap =
-                modelMapper.getTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
-        if (null == typeMap) {
-            //typeMap = modelMapper.createTypeMap(ImageDataItemDto.class, ImageDataItemEntity.class);
-        }*/
-
-        /*
-        typeMap.addMapping(src -> src.getFaceBox(), (dest, v) -> {
-            logger.info("Adding mapping: ...");
-        });
-        */
-
         PropertyMap<ImageDataItemDto, ImageDataItemEntity> mappingMap =
                 new PropertyMap<ImageDataItemDto, ImageDataItemEntity>() {
                     @Override
@@ -64,7 +49,6 @@ public class AppConfig {
                     }
                 };
         modelMapper.addMappings(mappingMap);
-
         return modelMapper;
     }
 
