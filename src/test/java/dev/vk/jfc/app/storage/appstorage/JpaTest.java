@@ -1,7 +1,11 @@
 package dev.vk.jfc.app.storage.appstorage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.BaseEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.BaseObjectRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +18,20 @@ public class JpaTest {
     private final static Logger logger = LoggerFactory.getLogger(JpaTest.class);
 
     @Autowired
-    private BaseObjectRepository baseObjectRepository;;
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
     @Test
+    @SneakyThrows
     void test01() {
-        Iterable<BaseEntity> all = baseObjectRepository.findAll();
-        for (BaseEntity be : all) {
-            logger.info("++ {} #{} ({})", be.getClass().getName(), be.getId(), be.getContainer().getId());
+        Iterable<ImageEntity> all = imageRepository.findAll();
+        for (ImageEntity imageEntity : all) {
+            logger.info("=== Image: `{}` : {}",
+                    imageEntity.getSource(),
+                    objectMapper.writeValueAsString(imageEntity));
         }
     }
-
 }
