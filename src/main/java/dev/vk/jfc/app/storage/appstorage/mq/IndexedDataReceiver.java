@@ -1,7 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.mq;
 
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
+import dev.vk.jfc.jfccommon.Jfc;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -10,7 +10,8 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor
@@ -18,32 +19,21 @@ public class IndexedDataReceiver {
 
     private final static Logger logger = LoggerFactory.getLogger(IndexedDataReceiver.class);
 
-    private final MinioClient minioClient;
+    private final ImageDataStorageService imageDataStorageService;
 
-    @RabbitListener(queues = "q-indexed-images")
+    @RabbitListener(queues = "q-indexed-data")
     @SneakyThrows
-    public void process(Message message) {
-        String s3Path = String.valueOf(message.getMessageProperties().getHeaders().get("s3Path"));
-        String messageType = String.valueOf(message.getMessageProperties().getHeaders().get("message-type"));
-        logger.info("uuid: {} - {} / {}",
-                message.getMessageProperties().getHeaders().get("uuid"),
-                messageType,
-                s3Path
-        );
-        if (
-                !"processed-frame-faces".equals(messageType)
-                        && !"processed-frame-face".equals(messageType)
-                        && !"processed-frame".equals(messageType)
-        ) return;
-        byte[] body = message.getBody();
-        long partSize = 5 * 1024 * 1024;
-        minioClient.putObject(PutObjectArgs
-                .builder()
-                .bucket("jpgdata")
-                .contentType("image/jpeg")
-                .object(s3Path)
-                .stream(new ByteArrayInputStream(body), body.length, partSize)
-                .build());
+    public void onIndexedDataMessage(Message message) {
+
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+        String messageType = (String) headers.get(Jfc.K_MESSAGE_TYPE);
+        UUID msgUuid = UUID.fromString((String) headers.get(Jfc.K_UUID));
+        UUID msgParentUuid = UUID.fromString((String) headers.get(Jfc.K_PARENT_UUID));
+
+        logger.info("{}: uuid: {}, parent: {}", messageType, msgUuid, msgParentUuid);
+
+        imageDataStorageService.onIndexedData(message);
+
     }
 
 }
