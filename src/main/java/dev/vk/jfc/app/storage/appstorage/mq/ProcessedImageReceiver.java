@@ -49,7 +49,7 @@ public class ProcessedImageReceiver {
 
         switch (messageType) {
             case Jfc.TP_PROCESSED_FRAME:
-                imageDataStorageService.onProcessedImage(message);
+                imageDataStorageService.onImageMessage(message);
                 break;
             case Jfc.TP_PROCESSED_FRAME_FACES:
             case Jfc.TP_PROCESSED_FRAME_FACE:

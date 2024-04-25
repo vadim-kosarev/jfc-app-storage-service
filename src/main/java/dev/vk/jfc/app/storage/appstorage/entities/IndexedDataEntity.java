@@ -14,7 +14,7 @@ public class IndexedDataEntity extends HeadersEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "base_object_parent1")
     @JsonIgnore
-    private ImageEntity parentImage;
+    private ImageEntity imageEntity;
 
     private Boolean markerImageIndexed;
 

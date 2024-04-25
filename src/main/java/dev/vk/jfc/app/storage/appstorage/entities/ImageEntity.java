@@ -10,11 +10,20 @@ import lombok.Setter;
 @Setter
 public class ImageEntity extends HeadersEntity {
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentImage")
+
+    /**
+     * BaseObject: Container <---> Element[]
+     *
+     * One-to-Many: this image references recognized images - faces_image, [face_1, face_2, ..., face_n]
+     *
+     * Many-to-One: this image relates to recognized image using Container - Elements[] relations
+     */
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "imageEntity")
     private IndexedDataEntity indexedDataEntity;
 
     public ImageEntity() {
-        setMessageType("new-type-ProcessedImageObject");
+        //setMessageType("new-type-ProcessedImageObject");
     }
 
 }
