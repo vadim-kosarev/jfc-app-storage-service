@@ -1,12 +1,17 @@
 package dev.vk.jfc.app.storage.appstorage.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
 import io.minio.MinioClient;
+import jakarta.annotation.PostConstruct;
+import org.flywaydb.core.Flyway;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     private final static Logger logger = LoggerFactory.getLogger(AppConfig.class);
-
 
     @Value("${app.minio.endpoint}")
     private String minioEndpoint;
@@ -36,6 +40,13 @@ public class AppConfig {
     }
 
     @Bean
+    public ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper;
+    }
+
+    @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         PropertyMap<ImageDataItemDto, ImageDataItemEntity> imageBoxMappingMap =
@@ -46,21 +57,7 @@ public class AppConfig {
                         map().setImgBox_p1_y(source.getFaceBox().getP1().getY());
                         map().setImgBox_p2_x(source.getFaceBox().getP2().getX());
                         map().setImgBox_p2_y(source.getFaceBox().getP2().getY());
-//                        configure2();
                     }
-
-/*
-                    protected void configure2() {
-                        ArrayList<FloatArrayItemEntity> targetList = new ArrayList<>();
-                        float[] faceVector = source.getFaceVector();
-                        UUID uuid = map().getId();
-                        for (int i = 0; i < faceVector.length; i++) {
-                            FloatArrayItemEntity ent = new FloatArrayItemEntity();
-                            ent.setItemId(new ArrayItemId(uuid, i));
-                        }
-                        map().setFaceVector(targetList);
-                    }
- */
                 };
         modelMapper.addMappings(imageBoxMappingMap);
 

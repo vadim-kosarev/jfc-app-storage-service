@@ -9,7 +9,7 @@ import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ProcessedImageRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.jfccommon.Jfc;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -27,13 +27,10 @@ import java.util.*;
 public class ImageDataStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageService.class);
-    private final static ObjectMapper objectMapper = new ObjectMapper();
 
-    static {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    private final ObjectMapper objectMapper;
 
-    private final ProcessedImageRepository processedImageRepository;
+    private final ImageRepository imageRepository;
     private final IndexedDataRepository indexedDataRepository;
     private final ImageDataRepository imageDataRepository;
     private final ModelMapper modelMapper;
@@ -56,13 +53,13 @@ public class ImageDataStorageService {
 
     @Transactional
     protected ImageEntity getRootProcessedImage(UUID uuid) {
-        Optional<ImageEntity> lookForEntity = processedImageRepository.findById(uuid);
+        Optional<ImageEntity> lookForEntity = imageRepository.findById(uuid);
         ImageEntity pImg = lookForEntity.orElseGet(ImageEntity::new);
         pImg.setId(uuid);
         if (pImg.getElements() == null) {
             pImg.setElements(new ArrayList<>());
         }
-        return processedImageRepository.save(pImg);
+        return imageRepository.save(pImg);
     }
 
     @Transactional
@@ -81,7 +78,7 @@ public class ImageDataStorageService {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         ImageEntity imageEntity = getRootProcessedImage(uuid);
         fillInHeaderData(imageEntity, headers);
-        processedImageRepository.save(imageEntity);
+        imageRepository.save(imageEntity);
     }
 
     @Transactional
@@ -96,7 +93,7 @@ public class ImageDataStorageService {
         imageEntity = imageDataRepository.save(imageEntity);
 
         processedImageEntity.getElements().add(imageEntity);
-        processedImageRepository.save(processedImageEntity);
+        imageRepository.save(processedImageEntity);
     }
 
     @Transactional

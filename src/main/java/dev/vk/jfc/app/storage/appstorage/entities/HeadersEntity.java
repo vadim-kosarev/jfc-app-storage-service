@@ -1,11 +1,13 @@
 package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "tbl_headers")
 @Setter
+@Getter
 public class HeadersEntity extends BaseEntity {
 
     @Column(nullable = true)

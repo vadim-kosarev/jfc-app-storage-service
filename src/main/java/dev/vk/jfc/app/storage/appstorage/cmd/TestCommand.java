@@ -7,7 +7,6 @@ import dev.vk.jfc.app.storage.appstorage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.javatuples.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -25,7 +24,7 @@ public class TestCommand implements CommandLineRunner {
     private final ContainedRepository containedRepository;
     private final ChildRepository childRepository;
     private final BaseObjectRepository baseObjectRepository;
-    private final ProcessedImageRepository processedImageRepository;
+    private final ImageRepository imageRepository;
 
     protected Pair<UUID, UUID> step01_1(Container ssParent) {
         Child c = new Child();
@@ -163,7 +162,7 @@ public class TestCommand implements CommandLineRunner {
          */
         imageEntity.setElements(boxes);
 
-        return processedImageRepository.save(imageEntity);
+        return imageRepository.save(imageEntity);
     }
 
     private ImageEntity createProcessedImage() {
@@ -171,7 +170,7 @@ public class TestCommand implements CommandLineRunner {
         order.setId(UUID.randomUUID());
         order.setLabel("Processed image");
         order.setS3Path("s3Path://jpgdata/bucket/image.jpg");
-        return processedImageRepository.save(order);
+        return imageRepository.save(order);
     }
 
     @Override

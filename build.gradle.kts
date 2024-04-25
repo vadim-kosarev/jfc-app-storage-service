@@ -22,8 +22,10 @@ dependencies {
     implementation("org.javatuples:javatuples:1.2")
     implementation("org.aspectj:aspectjrt")
     implementation("com.jcabi:jcabi-aspects:0.25.1")
-//    implementation("commons-beanutils:commons-beanutils:1.9.4")
     implementation("org.modelmapper:modelmapper:3.2.0")
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-mysql")
+
 
     implementation(project(":modules:jfc-common"))
 
