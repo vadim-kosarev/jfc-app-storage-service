@@ -1,0 +1,12 @@
+{
+    "brokerTimestamp": 1714060520901,
+    "frameNo": 0,
+    "hostname": "HARON",
+    "localID": 105636,
+    "message-type": "processed-frame-faces",
+    "parentUuid": "4766d9cb-623f-4767-84bc-c8e406408d17",
+    "s3Path": "HARON/out/orban_putin.jpg/4766d9cb-623f-4767-84bc-c8e406408d17/6e9e0327-2d2d-429f-8d4e-5b77450489a6_frame_1714060463053_0_105636.jpg",
+    "source": "out/orban_putin.jpg",
+    "timestamp": 1714060463053,
+    "uuid": "6e9e0327-2d2d-429f-8d4e-5b77450489a6"
+}
