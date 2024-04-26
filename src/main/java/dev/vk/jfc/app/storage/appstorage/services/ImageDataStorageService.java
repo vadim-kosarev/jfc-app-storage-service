@@ -80,10 +80,15 @@ public class ImageDataStorageService {
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
         ImageEntity me = getImageEntity(headers);
         fillInHeaderData(me, headers);
-        imageRepository.save(me);
         ImageEntity parentImage = getImageEntity(parentUuid);
+
+        me.setContainer(parentImage);
         parentImage.getElements().add(me);
-        return imageRepository.save(parentImage);
+        imageRepository.save(parentImage);
+
+//        me.setContainer(parentImage);
+//        me = imageRepository.save(me);
+        return me;
     }
 
     @Transactional

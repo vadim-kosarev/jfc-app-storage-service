@@ -27,7 +27,7 @@ public class BaseEntity {
     private String label;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "base_object_parent")
+    @JoinColumn(name = "base_parent")
     @JsonIgnore
     private BaseEntity container;
 

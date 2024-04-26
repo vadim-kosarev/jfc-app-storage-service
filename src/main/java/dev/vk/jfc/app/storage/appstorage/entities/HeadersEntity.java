@@ -14,7 +14,6 @@ public class HeadersEntity extends BaseEntity {
 //    private LocalDateTime brokerTimestamp = LocalDateTime.now();
     private Long brokerTimestamp = System.currentTimeMillis();
 
-
     @Column(nullable = true)
 //    private LocalDateTime timestamp = LocalDateTime.now();
     private Long timestamp = System.currentTimeMillis();
@@ -25,7 +24,7 @@ public class HeadersEntity extends BaseEntity {
     @Column(nullable = true)
     private String hostname;
 
-    @Column(name = "columnID")
+    @Column(name = "col_localId")
     private Integer localID;
 
     @Column(nullable = true, length = 65535)
@@ -37,6 +36,6 @@ public class HeadersEntity extends BaseEntity {
     @Column(name = "messageType")
     private String messageType;
 
-    private String marker_HeadersObject;
+    //private String marker_HeadersObject;
 
 }
