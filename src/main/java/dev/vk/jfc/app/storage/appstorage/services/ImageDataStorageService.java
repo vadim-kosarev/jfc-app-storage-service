@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -52,14 +51,31 @@ public class ImageDataStorageService {
         image.setMessageType(String.valueOf(headers.get(Jfc.K_MESSAGE_TYPE)));
     }
 
-    private ImageEntity getImageEntity(UUID uuid) {
+    @Transactional
+    protected ImageEntity getImageEntity(UUID uuid) {
         Optional<ImageEntity> lookForEntity = imageRepository.findById(uuid);
         ImageEntity pImg = lookForEntity.orElseGet(ImageEntity::new);
         pImg.setId(uuid);
         if (pImg.getElements() == null) {
             pImg.setElements(new ArrayList<>());
         }
+        if (pImg.getIndexedDataEntity() == null) {
+            IndexedDataEntity indexedDataEntity = new IndexedDataEntity();
+            indexedDataEntity.setId(UUID.randomUUID());
+            pImg.setIndexedDataEntity(indexedDataEntity);
+        }
         return pImg;
+    }
+
+    @Transactional
+    protected IndexedDataEntity getIndexedDataEntity(UUID uuid) {
+        Optional<IndexedDataEntity> lookForEntity = indexedDataRepository.findById(uuid);
+        IndexedDataEntity entity = lookForEntity.orElseGet(IndexedDataEntity::new);
+        entity.setId(uuid);
+        if (entity.getElements() == null) {
+            entity.setElements(new ArrayList<>());
+        }
+        return indexedDataRepository.save(entity);
     }
 
     public void onImageMessage(Message message) {
@@ -86,8 +102,6 @@ public class ImageDataStorageService {
         parentImage.getElements().add(me);
         imageRepository.save(parentImage);
 
-//        me.setContainer(parentImage);
-//        me = imageRepository.save(me);
         return me;
     }
 
@@ -110,23 +124,17 @@ public class ImageDataStorageService {
 
     @Transactional
     @SneakyThrows
-    public void onIndexedData(Message message) {
-
-        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+    public void onIndexedData(Map<String, Object> headers, byte[] bBody) {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
         ImageEntity imageEntity = getImageEntity(parentUuid);
 
-        IndexedDataEntity indexedDataEntity = imageEntity.getIndexedDataEntity();
-        if (null == indexedDataEntity) {
-            indexedDataEntity = getIndexedData(uuid);
-            indexedDataEntity.setLabel("**Label: `IndexedDataEntity` / %s".formatted(uuid));
-            indexedDataEntity.setContainer(imageEntity);
-            imageEntity.setIndexedDataEntity(indexedDataEntity);
-        }
+        IndexedDataEntity indexedDataEntity = getIndexedDataEntity(uuid);
+        indexedDataEntity.setImageEntity(imageEntity);
+        imageEntity.setIndexedDataEntity(indexedDataEntity);
         indexedDataRepository.save(indexedDataEntity);
+//        imageRepository.save(imageEntity);
 
-        byte[] bBody = message.getBody();
         String strBody = new String(bBody);
         logger.debug("Processing {}", strBody);
 
@@ -135,10 +143,14 @@ public class ImageDataStorageService {
                 }
         );
 
+        /*
         for (ImageDataItemDto dto : theList) {
             logger.debug("Element: {} ", dto);
 
             ImageDataItemEntity entity = modelMapper.map(dto, ImageDataItemEntity.class);
+            entity.setId(UUID.randomUUID());
+            entity.setContainer(indexedDataEntity);
+            entity = imageDataItemRepository.save(entity);
             logger.debug(" --> Mapped to: {}", entity);
 
             if (entity.getId() == null) {
@@ -154,13 +166,22 @@ public class ImageDataStorageService {
                         )
                 );
             }
-
             // ========================================================
 
             imageDataItemRepository.save(entity);
-
         }
+         */
 
 //        indexedDataRepository.save(indexedDataEntity);
+        logger.info("Finished...");
+    }
+
+    @Transactional
+    @SneakyThrows
+    public void onIndexedDataMessage(Message message) {
+
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+        byte[] bBody = message.getBody();
+        onIndexedData(headers, bBody);
     }
 }

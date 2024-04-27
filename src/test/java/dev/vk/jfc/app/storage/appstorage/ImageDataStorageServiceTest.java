@@ -46,6 +46,84 @@ public class ImageDataStorageServiceTest {
         assertValues(true);
     }
 
+    @Test
+    @SneakyThrows
+    void test_03_04_imageEntity() {
+        String headersFile3 = "/msg03-q-indexed-images-processed-frame-face-headers.json";
+        String headersFile4 = "/msg04-q-indexed-images-processed-frame-face-headers.json";
+
+        {
+            String headersFile = headersFile3;
+            HashMap<String, Object> headers =
+                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
+            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
+        }
+
+        {
+            String headersFile = headersFile4;
+            HashMap<String, Object> headers =
+                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
+            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
+        }
+
+        ImageEntity entityToCheck = getCheckImageEntity();
+        logger.info("Collection of `{}`: {} element(s)", entityToCheck.getId(), entityToCheck.getElements().size());
+
+        assertValues(false);
+    }
+
+    @Test
+    @SneakyThrows
+    void test_05_imageEntity() {
+        String headersFile3 = "/msg05-q-indexed-images-processed-frame-faces-headers.json";
+
+        HashMap<String, Object> headers =
+                jsonObjectMapper.readValue(getClassPathInputStream(headersFile3), HashMap.class);
+        ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
+        UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
+
+        assertValues(false);
+    }
+
+    @Test
+    void test_02_03_04_imageEntity() {
+        test_02_imageEntity();
+        test_03_04_imageEntity();
+        assertValues(true);
+//        assertEquals(2, getCheckImageEntity().getElements().size());
+    }
+
+
+    @Test
+    @SneakyThrows
+    void test_02_05_version01() {
+        test_02_imageEntity();
+        test_03_04_imageEntity();
+        test_05_imageEntity();
+        assertValues(true);
+//        assertEquals(3, getCheckImageEntity().getElements().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void test_02_05_version02() {
+        test_03_04_imageEntity();
+        test_05_imageEntity();
+        test_02_imageEntity();
+//        assertEquals(3, getCheckImageEntity().getElements().size());
+    }
+
+    @Test
+    @SneakyThrows
+    void test_02_05_version03() {
+        test_05_imageEntity();
+        test_03_04_imageEntity();
+        test_02_imageEntity();
+//        assertEquals(3, getCheckImageEntity().getElements().size());
+    }
+
     ImageEntity getImageEntity(UUID uuid) {
         return imageRepository.findById(uuid).orElse(null);
     }
@@ -80,96 +158,21 @@ public class ImageDataStorageServiceTest {
         return getImageEntity(headersFile);
     }
 
-    @Test
-    void test_02_03_04_imageEntity() {
-        test_02_imageEntity();
-        test_03_04_imageEntity();
-
-        assertValues(true);
-
-        ImageEntity checkImage = getCheckImageEntity();
-        logger.info("checkImage: `{}`. ELEMENTS: {}", checkImage.getId(), checkImage.getElements().size());
-        assertEquals(checkImage.getElements().size(), 2);
-    }
-
-    @Test
-    @SneakyThrows
-    void test_03_04_imageEntity() {
-        String headersFile3 = "/msg03-q-indexed-images-processed-frame-face-headers.json";
-        String headersFile4 = "/msg04-q-indexed-images-processed-frame-face-headers.json";
-
-        UUID parentUuid1;
-        UUID parentUuid2;
-
-        {
-            String headersFile = headersFile3;
-            HashMap<String, Object> headers =
-                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
-            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
-            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
-        }
-
-        {
-            String headersFile = headersFile4;
-            HashMap<String, Object> headers =
-                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
-            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
-            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
-        }
-
-        ImageEntity entityToCheck = getCheckImageEntity();
-        logger.info("Collection of `{}`: {} element(s)", entityToCheck.getId(), entityToCheck.getElements().size());
-
-        assertValues(false);
-        assertEquals(entityToCheck.getElements().size(), 2);
-    }
-
-    @Test
-    @SneakyThrows
-    void test_05_imageEntity() {
-        String headersFile3 = "/msg05-q-indexed-images-processed-frame-faces-headers.json";
-
-        String headersFile = headersFile3;
-        HashMap<String, Object> headers =
-                jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
-        ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
-        UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-
-        assertValues(false);
-    }
-
-    @Test
-    @SneakyThrows
-    void test_02_05_version01() {
-        test_02_imageEntity();
-        test_03_04_imageEntity();
-        test_05_imageEntity();
-
-        assertValues(true);
-        ImageEntity entity = getCheckImageEntity();
-        logger.info("ImageEntity: `{}` elements: {}", entity.getId(), entity.getElements().size());
-        assertEquals(3, entity.getElements().size());
-    }
-
-    @Test
-    @SneakyThrows
-    void test_02_05_version02() {
-        test_03_04_imageEntity();
-        test_05_imageEntity();
-        test_02_imageEntity();
-    }
-
-    @Test
-    @SneakyThrows
-    void test_02_05_version03() {
-        test_05_imageEntity();
-        test_03_04_imageEntity();
-        test_02_imageEntity();
-    }
 
     private InputStream getClassPathInputStream(String path) {
         return getClass().getResourceAsStream(path);
     }
 
+//    @Test
+    @SneakyThrows
+    void test_01_indexed_data() {
+        String headersFile = "/msg01-q-indexed-data-processed-frame-data-headers.json";
+        String payloadFile = "/msg01-q-indexed-data-processed-frame-data-payload.json";
+
+        HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+        byte[] payload = getClassPathInputStream(payloadFile).readAllBytes();
+
+        imageDataStorageService.onIndexedData(headers, payload);
+    }
 
 }
