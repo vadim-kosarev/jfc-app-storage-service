@@ -2,6 +2,7 @@ package dev.vk.jfc.app.storage.appstorage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
 import dev.vk.jfc.jfccommon.Jfc;
@@ -163,7 +164,7 @@ public class ImageDataStorageServiceTest {
         return getClass().getResourceAsStream(path);
     }
 
-//    @Test
+    @Test
     @SneakyThrows
     void test_01_indexed_data() {
         String headersFile = "/msg01-q-indexed-data-processed-frame-data-headers.json";
@@ -172,7 +173,8 @@ public class ImageDataStorageServiceTest {
         HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
         byte[] payload = getClassPathInputStream(payloadFile).readAllBytes();
 
-        imageDataStorageService.onIndexedData(headers, payload);
+        IndexedDataEntity entity = imageDataStorageService.getIndexedDataEntity(headers, payload);
+        logger.info("Finished...");
     }
 
 }

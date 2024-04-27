@@ -106,6 +106,21 @@ public class ImageDataStorageService {
     }
 
     @Transactional
+    public IndexedDataEntity getIndexedDataEntity(Map<String, Object> headers, byte[] payload) {
+        UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
+        IndexedDataEntity me = getIndexedDataEntity(uuid);
+        fillInHeaderData(me, headers);
+
+        UUID parentUuid = UUID.fromString((String.valueOf(headers.get(Jfc.K_PARENT_UUID))));
+        ImageEntity parentImage = getImageEntity(parentUuid);
+        me.setImageEntity(parentImage);
+        me = indexedDataRepository.save(me);
+
+        return me;
+    }
+
+
+    @Transactional
     public void onFrameFacesImage(Message message) {
         Map<String, Object> headers = message.getMessageProperties().getHeaders();
         ImageEntity me = getImageFaceEntity(headers);
@@ -113,27 +128,15 @@ public class ImageDataStorageService {
     }
 
     @Transactional
-    protected IndexedDataEntity getIndexedData(UUID uuid) {
-        IndexedDataEntity entity = indexedDataRepository.findById(uuid).orElseGet(IndexedDataEntity::new);
-        entity.setId(uuid);
-        if (entity.getElements() == null) {
-            entity.setElements(new ArrayList<>());
-        }
-        return indexedDataRepository.save(entity);
-    }
-
-    @Transactional
     @SneakyThrows
-    public void onIndexedData(Map<String, Object> headers, byte[] bBody) {
+    public IndexedDataEntity onIndexedData(Map<String, Object> headers, byte[] bBody) {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
         ImageEntity imageEntity = getImageEntity(parentUuid);
 
-        IndexedDataEntity indexedDataEntity = getIndexedDataEntity(uuid);
-        indexedDataEntity.setImageEntity(imageEntity);
-        imageEntity.setIndexedDataEntity(indexedDataEntity);
-        indexedDataRepository.save(indexedDataEntity);
-//        imageRepository.save(imageEntity);
+//        IndexedDataEntity indexedDataEntity = getIndexedDataEntity(uuid);
+//        fillInHeaderData(indexedDataEntity, headers);
+//        indexedDataEntity.setImageEntity(imageEntity);
 
         String strBody = new String(bBody);
         logger.debug("Processing {}", strBody);
@@ -174,6 +177,8 @@ public class ImageDataStorageService {
 
 //        indexedDataRepository.save(indexedDataEntity);
         logger.info("Finished...");
+//        return indexedDataEntity;
+        return null;
     }
 
     @Transactional
