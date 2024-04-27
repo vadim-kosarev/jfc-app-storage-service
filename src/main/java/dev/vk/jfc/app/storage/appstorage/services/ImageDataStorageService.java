@@ -58,6 +58,8 @@ public class ImageDataStorageService {
         if (pImg.getElements() == null) {
             pImg.setElements(new ArrayList<>());
         }
+
+        /*
         if (pImg.getIndexedDataEntity() == null) {
 //            IndexedDataEntity indexedDataEntity = new IndexedDataEntity();
             if (null == indexedDataId) indexedDataId = UUID.randomUUID();
@@ -65,6 +67,7 @@ public class ImageDataStorageService {
 //            pImg.setIndexedDataEntity(indexedDataEntity);
             pImg.setIndexedDataEntity(getIndexedDataEntity(indexedDataId));
         }
+         */
         return pImg;
     }
 
