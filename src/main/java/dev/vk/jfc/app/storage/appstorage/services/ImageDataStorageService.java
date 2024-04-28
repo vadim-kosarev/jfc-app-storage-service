@@ -100,15 +100,47 @@ public class ImageDataStorageService {
     }
 
     @Transactional
+    @SneakyThrows
     public IndexedDataEntity getIndexedDataEntity(Map<String, Object> headers, byte[] payload) {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString((String.valueOf(headers.get(Jfc.K_PARENT_UUID))));
 
         IndexedDataEntity me = getIndexedDataEntity(uuid);
-        fillInHeaderData(me, headers);
-//        me = indexedDataRepository.save(me);
 
         ImageEntity parentImage = getImageEntity(parentUuid);
+        parentImage.setIndexedDataEntity(me);
+        imageRepository.save(parentImage);
+
+        String strBody = new String(payload);
+        List<ImageDataItemDto> theList = jsonObjectMapper.readValue(strBody,
+                new TypeReference<List<ImageDataItemDto>>() {
+                }
+        );
+
+        for (ImageDataItemDto item : theList) {
+            logger.info("Read item: {}", item);
+
+            IndexedDataItemEntity itemEntity = new IndexedDataItemEntity();
+            itemEntity.setId(UUID.randomUUID());
+            itemEntity.setParentImageData(me);
+            modelMapper.map(item, itemEntity);
+
+            int cnt = 0;
+            itemEntity.setFaceVector(new ArrayList<>());
+            for (float fData : item.getFaceVector()) {
+                itemEntity.getFaceVector().add(
+                        new FloatArrayItemEntity(new ArrayItemId(
+                                itemEntity.getId(), cnt++
+                        ), fData)
+                );
+            }
+
+            logger.info("itemEntity: {}", itemEntity);
+
+            me.getElements().add(itemEntity);
+        }
+
+        fillInHeaderData(me, headers);
         me.setImageEntity(parentImage);
         me = indexedDataRepository.save(me);
 
@@ -146,7 +178,7 @@ public class ImageDataStorageService {
         for (ImageDataItemDto dto : theList) {
             logger.debug("Element: {} ", dto);
 
-            ImageDataItemEntity entity = modelMapper.map(dto, ImageDataItemEntity.class);
+            IndexedDataItemEntity entity = modelMapper.map(dto, IndexedDataItemEntity.class);
             entity.setId(UUID.randomUUID());
             entity.setContainer(indexedDataEntity);
             entity = imageDataItemRepository.save(entity);

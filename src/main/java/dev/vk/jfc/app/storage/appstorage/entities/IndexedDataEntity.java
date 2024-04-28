@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+
 @Entity
 @Table(name = "tbl_indexed_data")
 @Setter
@@ -12,10 +14,18 @@ import lombok.Setter;
 public class IndexedDataEntity extends HeadersEntity {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "base_object_parent1")
+    @JoinColumn(name = "image_parent")
     @JsonIgnore
     private ImageEntity imageEntity;
 
     private Boolean markerImageIndexed;
 
+    /*
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentImageData")
+    private Collection<IndexedDataItemEntity> items;
+    */
+
+    public IndexedDataEntity() {
+        setMessageType(this.getClass().getSimpleName());
+    }
 }

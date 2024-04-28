@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -13,12 +12,12 @@ import java.util.List;
 
 @Setter
 @Getter
-public class ImageDataItemEntity extends HeadersEntity {
+public class IndexedDataItemEntity extends HeadersEntity {
 
     private Integer faceIndex;
     private Float detection;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "col_parent_image", referencedColumnName = "base_id")
     private IndexedDataEntity parentImageData;
 
@@ -30,7 +29,8 @@ public class ImageDataItemEntity extends HeadersEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "itemId.objID")
     private List<FloatArrayItemEntity> faceVector;
 
-    public ImageDataItemEntity() {
+    public IndexedDataItemEntity() {
         faceVector = new ArrayList<>();
+        setMessageType(this.getClass().getSimpleName());
     }
 }

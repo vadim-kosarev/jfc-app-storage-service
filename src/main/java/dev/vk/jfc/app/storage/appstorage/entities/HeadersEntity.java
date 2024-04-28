@@ -38,4 +38,8 @@ public class HeadersEntity extends BaseEntity {
 
     //private String marker_HeadersObject;
 
+
+    public HeadersEntity() {
+        setMessageType(this.getClass().getSimpleName());
+    }
 }

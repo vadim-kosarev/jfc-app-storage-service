@@ -3,7 +3,9 @@ package dev.vk.jfc.app.storage.appstorage.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import io.minio.MinioClient;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -46,8 +48,8 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        PropertyMap<ImageDataItemDto, ImageDataItemEntity> imageBoxMappingMap =
-                new PropertyMap<ImageDataItemDto, ImageDataItemEntity>() {
+        PropertyMap<ImageDataItemDto, IndexedDataItemEntity> imageBoxMappingMap =
+                new PropertyMap<ImageDataItemDto, IndexedDataItemEntity>() {
                     @Override
                     protected void configure() {
                         map().setImgBox_p1_x(source.getFaceBox().getP1().getX());
@@ -57,7 +59,6 @@ public class AppConfig {
                     }
                 };
         modelMapper.addMappings(imageBoxMappingMap);
-
         return modelMapper;
     }
 

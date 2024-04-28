@@ -18,6 +18,5 @@ public class ImageDataEntity extends HeadersEntity {
     private ImageEntity imageEntity;
 
     public ImageDataEntity() {
-        setMessageType("new-type-ProcessedImageDataObject");
     }
 }

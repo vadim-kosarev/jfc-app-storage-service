@@ -3,8 +3,7 @@ package dev.vk.jfc.app.storage.appstorage.cmd;
 import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItemEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataEntity;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
@@ -31,9 +30,9 @@ public class TestCommand03 implements CommandLineRunner {
         imgData.setLabel("Label: TEST: ImageData");
         imgData = indexedDataRepository.save(imgData);
 
-        ImageDataItemEntity dataItem = new ImageDataItemEntity();
+        IndexedDataItemEntity dataItem = new IndexedDataItemEntity();
         dataItem.setId(UUID.randomUUID());
-        dataItem.setLabel("Label: TEST: ImageDataItemEntity");
+        dataItem.setLabel("Label: TEST: IndexedDataItemEntity");
         dataItem.setFaceIndex(777);
         dataItem.setImgBox_p1_x(10);
         dataItem.setImgBox_p1_y(10);
@@ -54,7 +53,7 @@ public class TestCommand03 implements CommandLineRunner {
         repository.save(dataItem);
     }
 
-    private void addFloatItem(ArrayList<FloatArrayItemEntity> faceVector, ImageDataItemEntity dataItem, int i) {
+    private void addFloatItem(ArrayList<FloatArrayItemEntity> faceVector, IndexedDataItemEntity dataItem, int i) {
         faceVector.add(new FloatArrayItemEntity(new ArrayItemId(dataItem.getId(), i), rnd.nextFloat()));
     }
 

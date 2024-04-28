@@ -3,7 +3,7 @@ package dev.vk.jfc.app.storage.appstorage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
-import dev.vk.jfc.app.storage.appstorage.entities.ImageDataItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class JsonTests {
     @Test
     @SneakyThrows
     void testJSON_Serialize() {
-        ImageDataItemEntity entity = new ImageDataItemEntity();
+        IndexedDataItemEntity entity = new IndexedDataItemEntity();
         entity.setFaceIndex(999);
         entity.setDetection(0.7777777f);
 
@@ -52,7 +52,7 @@ public class JsonTests {
         ImageDataItemDto obj = objectMapper.readValue(dataSrc, ImageDataItemDto.class);
         logger.info("+++ Object: {}", obj);
 
-        ImageDataItemEntity entity = modelWrapper.map(obj, ImageDataItemEntity.class);
+        IndexedDataItemEntity entity = modelWrapper.map(obj, IndexedDataItemEntity.class);
         logger.info("+++ Mapped entity: {}", entity);
 
     }

@@ -23,7 +23,7 @@ public class ImageEntity extends HeadersEntity {
     private IndexedDataEntity indexedDataEntity;
 
     public ImageEntity() {
-        //setMessageType("new-type-ProcessedImageObject");
+        setMessageType(this.getClass().getSimpleName());
     }
 
 }
