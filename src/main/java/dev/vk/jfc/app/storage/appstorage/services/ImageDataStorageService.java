@@ -52,22 +52,12 @@ public class ImageDataStorageService {
     }
 
     @Transactional
-    protected ImageEntity getImageEntity(UUID uuid, UUID indexedDataId) {
+    protected ImageEntity getImageEntity(UUID uuid) {
         ImageEntity pImg = imageRepository.findById(uuid).orElseGet(ImageEntity::new);
         pImg.setId(uuid);
         if (pImg.getElements() == null) {
             pImg.setElements(new ArrayList<>());
         }
-
-        /*
-        if (pImg.getIndexedDataEntity() == null) {
-//            IndexedDataEntity indexedDataEntity = new IndexedDataEntity();
-            if (null == indexedDataId) indexedDataId = UUID.randomUUID();
-//            indexedDataEntity.setId(indexedDataId);
-//            pImg.setIndexedDataEntity(indexedDataEntity);
-            pImg.setIndexedDataEntity(getIndexedDataEntity(indexedDataId));
-        }
-         */
         return pImg;
     }
 
@@ -90,7 +80,7 @@ public class ImageDataStorageService {
     @Transactional
     public ImageEntity getImageEntity(Map<String, Object> headers) {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
-        ImageEntity entity = getImageEntity(uuid, null);
+        ImageEntity entity = getImageEntity(uuid);
         fillInHeaderData(entity, headers);
         return imageRepository.save(entity);
     }
@@ -100,7 +90,7 @@ public class ImageDataStorageService {
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
         ImageEntity me = getImageEntity(headers);
         fillInHeaderData(me, headers);
-        ImageEntity parentImage = getImageEntity(parentUuid, null);
+        ImageEntity parentImage = getImageEntity(parentUuid);
 
         me.setContainer(parentImage);
         parentImage.getElements().add(me);
@@ -118,7 +108,7 @@ public class ImageDataStorageService {
         fillInHeaderData(me, headers);
 //        me = indexedDataRepository.save(me);
 
-        ImageEntity parentImage = getImageEntity(parentUuid, uuid);
+        ImageEntity parentImage = getImageEntity(parentUuid);
         me.setImageEntity(parentImage);
         me = indexedDataRepository.save(me);
 
@@ -138,7 +128,7 @@ public class ImageDataStorageService {
     public IndexedDataEntity onIndexedData(Map<String, Object> headers, byte[] bBody) {
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
-        ImageEntity imageEntity = getImageEntity(parentUuid, null);
+        ImageEntity imageEntity = getImageEntity(parentUuid);
 
 //        IndexedDataEntity indexedDataEntity = getIndexedDataEntity(uuid);
 //        fillInHeaderData(indexedDataEntity, headers);
