@@ -1,6 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.mq;
 
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
+import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService01;
 import dev.vk.jfc.jfccommon.Jfc;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,8 +33,7 @@ public class IndexedDataReceiver {
 
         logger.info("{}: uuid: {}, parent: {}", messageType, msgUuid, msgParentUuid);
 
-        imageDataStorageService.onIndexedDataMessage(message);
-
+        imageDataStorageService.onIndexedDataMessage(headers, message.getBody());
     }
 
 }

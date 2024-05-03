@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
-import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
+import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService01;
 import dev.vk.jfc.jfccommon.Jfc;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +22,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ImageDataStorageServiceTest {
+public class ImageDataStorageService01Test {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageServiceTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImageDataStorageService01Test.class);
 
     @Autowired
-    private ImageDataStorageService imageDataStorageService;
+    private ImageDataStorageService01 imageDataStorageService01;
 
     @Autowired
     private ObjectMapper jsonObjectMapper;
@@ -42,7 +42,7 @@ public class ImageDataStorageServiceTest {
         HashMap<String, Object> headers =
                 jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
         logger.info("message headers:\n{}", headers);
-        ImageEntity entity = imageDataStorageService.getImageEntity(headers);
+        ImageEntity entity = imageDataStorageService01.onImageMessage(headers, true);
         logger.info("Created entity: {}", entity.getId());
         assertValues(true);
     }
@@ -50,29 +50,29 @@ public class ImageDataStorageServiceTest {
     @Test
     @SneakyThrows
     void test_03_04_imageEntity() {
-        String headersFile3 = "/msg03-q-indexed-images-processed-frame-face-headers.json";
-        String headersFile4 = "/msg04-q-indexed-images-processed-frame-face-headers.json";
-
-        {
-            String headersFile = headersFile3;
-            HashMap<String, Object> headers =
-                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
-            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
-            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
-        }
-
-        {
-            String headersFile = headersFile4;
-            HashMap<String, Object> headers =
-                    jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
-            ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
-            assertEquals(entity.getContainer().getId(), getCheckImageUuid());
-        }
-
+        test_03();
+        test_04();
         ImageEntity entityToCheck = getCheckImageEntity();
         logger.info("Collection of `{}`: {} element(s)", entityToCheck.getId(), entityToCheck.getElements().size());
-
         assertValues(false);
+    }
+
+    @SneakyThrows
+    void test_03() {
+        test_034_path("/msg03-q-indexed-images-processed-frame-face-headers.json");
+    }
+
+    @SneakyThrows
+    void test_04() {
+        test_034_path("/msg04-q-indexed-images-processed-frame-face-headers.json");
+    }
+
+    private void test_034_path(String headersFile3) throws IOException {
+        HashMap<String, Object> headers =
+                jsonObjectMapper.readValue(getClassPathInputStream(headersFile3), HashMap.class);
+        ImageEntity entity = imageDataStorageService01.getImageFaceEntity(headers, true);
+        entity = imageRepository.save(entity);
+        assertEquals(entity.getContainer().getId(), getCheckImageUuid());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class ImageDataStorageServiceTest {
 
         HashMap<String, Object> headers =
                 jsonObjectMapper.readValue(getClassPathInputStream(headersFile3), HashMap.class);
-        ImageEntity entity = imageDataStorageService.getImageFaceEntity(headers);
+        ImageEntity entity = imageDataStorageService01.getImageFaceEntity(headers, true);
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
 
         assertValues(false);
@@ -126,7 +126,7 @@ public class ImageDataStorageServiceTest {
     }
 
     ImageEntity getImageEntity(UUID uuid) {
-        return imageRepository.findById(uuid).orElse(null);
+        return imageRepository.findById(uuid).orElse(new ImageEntity(uuid));
     }
 
     void assertValues(boolean checkSavedValues) {
@@ -173,8 +173,28 @@ public class ImageDataStorageServiceTest {
         HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
         byte[] payload = getClassPathInputStream(payloadFile).readAllBytes();
 
-        IndexedDataEntity entity = imageDataStorageService.getIndexedDataEntity(headers, payload);
-        logger.info("Finished...");
+        IndexedDataEntity entity = imageDataStorageService01.getIndexedDataEntity(headers, payload);
+        logger.info("Finished test_01_indexed_data ... {}", entity.getId());
     }
 
+    @Test
+    @SneakyThrows
+    void test_02_05__05_01_version01() {
+        test_02_imageEntity();
+        test_03_04_imageEntity();
+        test_05_imageEntity();
+        test_01_indexed_data();
+        assertValues(true);
+    }
+
+
+    @Test
+    @SneakyThrows
+    void test_01_02_03_04_05_version01() {
+        test_01_indexed_data();
+        test_02_imageEntity();
+        test_03_04_imageEntity();
+        test_05_imageEntity();
+        assertValues(true);
+    }
 }

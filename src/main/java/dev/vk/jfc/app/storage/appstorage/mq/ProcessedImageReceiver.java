@@ -2,6 +2,7 @@ package dev.vk.jfc.app.storage.appstorage.mq;
 
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
 import dev.vk.jfc.app.storage.appstorage.services.S3StorageService;
+import dev.vk.jfc.app.storage.appstorage.services.StorageService;
 import dev.vk.jfc.jfccommon.Jfc;
 import jakarta.transaction.NotSupportedException;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -25,8 +28,11 @@ public class ProcessedImageReceiver {
             Jfc.TP_PROCESSED_FRAME, Jfc.TP_PROCESSED_FRAME_FACES, Jfc.TP_PROCESSED_FRAME_FACE
     );
 
+    @Autowired
     private final ImageDataStorageService imageDataStorageService;
-    private final S3StorageService s3StorageService;
+
+    @Autowired
+    private final StorageService storageService;
 
     @RabbitListener(queues = "q-indexed-images")
     @SneakyThrows
@@ -44,20 +50,19 @@ public class ProcessedImageReceiver {
 
         if (!imageMessageTypes.contains(messageType)) return;
 
-        byte[] body = message.getBody();
-        s3StorageService.putObject(s3Path, body);
+        byte[] payload = message.getBody();
+        storageService.putObject(s3Path, payload);
 
         switch (messageType) {
             case Jfc.TP_PROCESSED_FRAME:
-                imageDataStorageService.onImageMessage(message);
+                imageDataStorageService.onFrameImage(headers, payload);
                 break;
             case Jfc.TP_PROCESSED_FRAME_FACES:
             case Jfc.TP_PROCESSED_FRAME_FACE:
-                imageDataStorageService.onFrameFacesImage(message);
+                imageDataStorageService.onFrameFacesImage(headers, payload);
                 break;
             default:
                 throw new NotSupportedException("Not supported: " + messageType);
         }
-
     }
 }

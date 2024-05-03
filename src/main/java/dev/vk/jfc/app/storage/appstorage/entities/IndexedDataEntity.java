@@ -18,13 +18,6 @@ public class IndexedDataEntity extends HeadersEntity {
     @JsonIgnore
     private ImageEntity imageEntity;
 
-    private Boolean markerImageIndexed;
-
-    /*
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentImageData")
-    private Collection<IndexedDataItemEntity> items;
-    */
-
     public IndexedDataEntity() {
         setMessageType(this.getClass().getSimpleName());
     }

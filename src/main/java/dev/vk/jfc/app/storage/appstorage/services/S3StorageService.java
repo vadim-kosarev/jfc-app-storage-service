@@ -14,11 +14,12 @@ import java.security.NoSuchAlgorithmException;
 
 @Service
 @AllArgsConstructor
-public class S3StorageService {
+public class S3StorageService implements StorageService {
 
     private final MinioClient minioClient;
 
     @SneakyThrows
+    @Override
     public void putObject(String s3Path, byte[] body)  {
         long partSize = 5 * 1024 * 1024;
         minioClient.putObject(PutObjectArgs

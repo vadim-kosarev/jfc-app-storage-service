@@ -32,6 +32,7 @@ public class BaseEntity {
     private BaseEntity container;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "container", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BaseEntity> elements;
 
     @Column(name = "created_dt", nullable = false)

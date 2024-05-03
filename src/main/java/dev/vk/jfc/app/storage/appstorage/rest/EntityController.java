@@ -3,7 +3,7 @@ package dev.vk.jfc.app.storage.appstorage.rest;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.rest.dto.ImageDTO;
-import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService;
+import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService01;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class EntityController {
 
 
-    private final ImageDataStorageService imageDataStorageService;
+    private final ImageDataStorageService01 imageDataStorageService01;
     private final ImageRepository imageRepository;
     private final ModelMapper dtoMapper;
 
