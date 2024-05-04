@@ -6,7 +6,6 @@ import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import dev.vk.jfc.jfccommon.Jfc;
@@ -17,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,7 +30,7 @@ public class ImageDataStorageService01 implements ImageDataStorageService {
 
     private final ImageRepository imageRepository;
     private final IndexedDataRepository indexedDataRepository;
-    private final ImageDataRepository imageDataRepository;
+//    private final ImageDataRepository imageDataRepository;
     private final ModelMapper modelMapper;
     private final ImageDataItemRepository imageDataItemRepository;
 

@@ -5,7 +5,6 @@ import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
-import dev.vk.jfc.app.storage.appstorage.repository.ImageDataRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class TestCommand03 implements CommandLineRunner {
 
     private final ImageDataItemRepository repository;
-    private final ImageDataRepository imageDataRepository;
+//    private final ImageDataRepository imageDataRepository;
     private final IndexedDataRepository indexedDataRepository;
     private final Random rnd = new Random();
 
