@@ -5,13 +5,16 @@ import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.jfccommon.Jfc;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -43,14 +46,49 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
         logger.info("onFrameImage");
 
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
-        ImageEntity imageEntity = imageRepository.findById(uuid).orElseGet(ImageEntity::new);
+        ImageEntity imageEntity = getImageEntity(headers, uuid);
         fillInHeaderData(imageEntity, headers);
         imageEntity = imageRepository.save(imageEntity);
 
     }
 
+    private @NotNull ImageEntity getImageEntity(Map<String, Object> headers, UUID uuid) {
+        ImageEntity imageEntity = imageRepository.findById(uuid).orElseGet(ImageEntity::new);
+        if (imageEntity.getId() == null) {
+            imageEntity.setId(uuid);
+            imageEntity.setLabel("Created as new: %s".formatted(uuid));
+        } else {
+            imageEntity.setLabel("Found from DB: %s".formatted(uuid));
+        }
+        if (imageEntity.getElements() == null) {
+            imageEntity.setElements(new ArrayList<>());
+        }
+        return imageEntity;
+    }
+
     @Override
     public void onFrameFacesImage(Map<String, Object> headers, byte[] payload) {
+
+        UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
+        ImageEntity imageEntity = getImageEntity(headers, uuid);
+        fillInHeaderData(imageEntity, headers);
+
+        UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
+        ImageEntity parentImageEntity = getImageEntity(headers, parentUuid);
+
+        boolean contains = parentImageEntity.getElements()
+                .stream().map(item -> item.getId())
+                .collect(Collectors.toUnmodifiableSet())
+                .contains(uuid);
+
+        if (!contains) {
+            parentImageEntity.getElements().add(imageEntity);
+            parentImageEntity = imageRepository.save(parentImageEntity);
+        }
+
+        imageEntity.setContainer(parentImageEntity);
+        imageEntity = imageRepository.save(imageEntity);
+
         logger.info("onFrameFacesImage");
     }
 

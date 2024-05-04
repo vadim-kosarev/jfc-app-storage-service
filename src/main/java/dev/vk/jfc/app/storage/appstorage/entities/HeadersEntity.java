@@ -36,8 +36,6 @@ public class HeadersEntity extends BaseEntity {
     @Column(name = "messageType")
     private String messageType;
 
-    //private String marker_HeadersObject;
-
 
     public HeadersEntity() {
         setMessageType(this.getClass().getSimpleName());

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService02;
-import dev.vk.jfc.app.storage.appstorage.services.S3StorageService;
 import dev.vk.jfc.app.storage.appstorage.services.StorageService;
 import dev.vk.jfc.jfccommon.Jfc;
 import lombok.SneakyThrows;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class ImageDataStorageService02Test {
 
     @Test
     @SneakyThrows
-    void test_onFrameImage() {
+    void test_02_onFrameImage() {
         // setup
         String headersFile = "/msg02-q-indexed-images-processed-frame-headers.json";
         String payloadFile = "/msg02-q-indexed-images-processed-frame-payload.txt";
@@ -66,6 +66,80 @@ public class ImageDataStorageService02Test {
         byte[] getImage = storageService.getObject(found.getS3Path());
         assertEquals(payload.length, getImage.length);
         logger.info("Checked images size: OK");
+    }
+
+    @Test
+    @SneakyThrows
+    void test_05_onFrameFaces() {
+        // setup
+        String headersFile = "/msg05-q-indexed-images-processed-frame-faces-headers.json";
+        String payloadFile = "/msg05-q-indexed-images-processed-frame-faces-payload.txt";
+        test_onFrameFace_Arg(headersFile, payloadFile);
+    }
+
+    @Test
+    @SneakyThrows
+    void test_onFrameFace_03() {
+        // setup
+        String headersFile = "/msg03-q-indexed-images-processed-frame-face-headers.json";
+        String payloadFile = "/msg03-q-indexed-images-processed-frame-face-payload.txt";
+        test_onFrameFace_Arg(headersFile, payloadFile);
+    }
+
+    @Test
+    @SneakyThrows
+    void test_onFrameFace_04() {
+        // setup
+        String headersFile = "/msg04-q-indexed-images-processed-frame-face-headers.json";
+        String payloadFile = "/msg04-q-indexed-images-processed-frame-face-payload.txt";
+        test_onFrameFace_Arg(headersFile, payloadFile);
+    }
+
+
+    private void test_onFrameFace_Arg(String headersFile, String payloadFile) throws IOException {
+        HashMap<String, Object> headers =  jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+        byte[] payload = Base64.decode(getClassPathInputStream(payloadFile).readAllBytes());
+
+        // run
+        dataStorageService02.onFrameFacesImage(headers, payload);
+        storageService.putObject(String.valueOf(headers.get(Jfc.K_S3PATH)), payload);
+    }
+
+    @Test
+    @SneakyThrows
+    void test_faces05_then_parent02() {
+        test_05_onFrameFaces();
+        test_02_onFrameImage();
+    }
+
+    @Test
+    @SneakyThrows
+    void test_5_4_3_2() {
+        test_05_onFrameFaces();
+        test_onFrameFace_04();
+        test_onFrameFace_03();
+        test_02_onFrameImage();
+    }
+
+    @Test
+    @SneakyThrows
+    void test_55_4_3_2() {
+        test_05_onFrameFaces();
+        test_05_onFrameFaces();
+        test_onFrameFace_04();
+        test_onFrameFace_03();
+        test_02_onFrameImage();
+    }
+
+    @Test
+    @SneakyThrows
+    void test_555_222() {
+        test_05_onFrameFaces();
+        test_05_onFrameFaces();
+        test_05_onFrameFaces();
+        test_02_onFrameImage();
+        test_02_onFrameImage();
+        test_02_onFrameImage();
     }
 
     private InputStream getClassPathInputStream(String path) {
