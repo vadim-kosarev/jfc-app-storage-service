@@ -2,6 +2,7 @@ package dev.vk.jfc.app.storage.appstorage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService02;
 import dev.vk.jfc.app.storage.appstorage.services.StorageService;
@@ -38,6 +39,8 @@ public class ImageDataStorageService02Test {
 
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private ImageDataStorageService02 imageDataStorageService02;
 
     @AfterAll
     static void afterAll() {
@@ -50,7 +53,7 @@ public class ImageDataStorageService02Test {
         // setup
         String headersFile = "/msg02-q-indexed-images-processed-frame-headers.json";
         String payloadFile = "/msg02-q-indexed-images-processed-frame-payload.txt";
-        HashMap<String, Object> headers =  jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+        HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
         byte[] payload = Base64.decode(getClassPathInputStream(payloadFile).readAllBytes());
 
         // run
@@ -97,7 +100,7 @@ public class ImageDataStorageService02Test {
 
 
     private void test_onFrameFace_Arg(String headersFile, String payloadFile) throws IOException {
-        HashMap<String, Object> headers =  jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+        HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
         byte[] payload = Base64.decode(getClassPathInputStream(payloadFile).readAllBytes());
 
         // run
@@ -144,6 +147,37 @@ public class ImageDataStorageService02Test {
 
     private InputStream getClassPathInputStream(String path) {
         return getClass().getResourceAsStream(path);
+    }
+
+    @Test
+    @SneakyThrows
+    void test_onIndexedDataMessage() {
+        // setup
+        String headersFile = "/msg01-q-indexed-data-processed-frame-data-headers.json";
+        String payloadFile = "/msg01-q-indexed-data-processed-frame-data-payload.json";
+        HashMap<String, Object> headers = jsonObjectMapper.readValue(getClassPathInputStream(headersFile), HashMap.class);
+        byte[] payload = getClassPathInputStream(payloadFile).readAllBytes();
+
+        // run
+        imageDataStorageService02.onIndexedDataMessage(headers, payload);
+
+        // check
+        ImageEntity rootImage = imageRepository.findById(UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)))).get();
+        logger.info("Root Image: {}", jsonObjectMapper.writeValueAsString(rootImage));
+
+        var indexedDataEntity = rootImage.getIndexedDataEntity();
+        logger.info("Indexed data: {}", jsonObjectMapper.writeValueAsString(indexedDataEntity));
+
+        var elements = indexedDataEntity.getElements();
+        logger.info("Elements: {}", elements.size());
+        assertEquals(2, elements.size());
+
+        for (var element : elements) {
+            IndexedDataItemEntity indexedDataItemEntity = (IndexedDataItemEntity) element;
+            logger.info("Indexed data item: {}", indexedDataItemEntity);
+            assertEquals(128, indexedDataItemEntity.getFaceVector().size());
+        }
+
     }
 
 }
