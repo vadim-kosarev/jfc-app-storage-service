@@ -1,5 +1,6 @@
 package dev.vk.jfc.app.storage.appstorage.services;
 
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.AllArgsConstructor;
@@ -27,4 +28,14 @@ public class S3StorageService implements StorageService {
                 .build());
     }
 
+    @SneakyThrows
+    @Override
+    public byte[] getObject(String s3Path) {
+        return minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket("jpgdata")
+                        .object(s3Path)
+                        .build()
+        ).readAllBytes();
+    }
 }

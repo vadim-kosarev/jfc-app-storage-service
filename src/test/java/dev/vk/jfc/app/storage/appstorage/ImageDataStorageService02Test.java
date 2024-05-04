@@ -62,6 +62,10 @@ public class ImageDataStorageService02Test {
         ImageEntity found = imageRepository.findById(uuid).orElseThrow();
         assertEquals(uuid, found.getId());
         logger.info("Found image {}", jsonObjectMapper.writeValueAsString(found));
+
+        byte[] getImage = storageService.getObject(found.getS3Path());
+        assertEquals(payload.length, getImage.length);
+        logger.info("Checked images size: OK");
     }
 
     private InputStream getClassPathInputStream(String path) {
