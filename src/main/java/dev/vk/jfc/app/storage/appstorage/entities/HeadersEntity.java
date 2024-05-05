@@ -1,6 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,7 +36,6 @@ public class HeadersEntity extends BaseEntity {
 
     @Column(name = "messageType")
     private String messageType;
-
 
     public HeadersEntity() {
         setMessageType(this.getClass().getSimpleName());

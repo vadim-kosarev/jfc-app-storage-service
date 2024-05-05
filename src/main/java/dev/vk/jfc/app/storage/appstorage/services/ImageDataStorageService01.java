@@ -2,7 +2,8 @@ package dev.vk.jfc.app.storage.appstorage.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
+import dev.vk.jfc.app.storage.appstorage.dto.ImageDto;
+import dev.vk.jfc.app.storage.appstorage.dto.IndexedDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageDataItemRepository;
@@ -30,7 +31,6 @@ public class ImageDataStorageService01 implements ImageDataStorageService {
 
     private final ImageRepository imageRepository;
     private final IndexedDataRepository indexedDataRepository;
-//    private final ImageDataRepository imageDataRepository;
     private final ModelMapper modelMapper;
     private final ImageDataItemRepository imageDataItemRepository;
 
@@ -135,12 +135,12 @@ public class ImageDataStorageService01 implements ImageDataStorageService {
         parentImage.setIndexedDataEntity(me);
 
         String strBody = new String(payload);
-        List<ImageDataItemDto> theList = jsonObjectMapper.readValue(strBody,
-                new TypeReference<List<ImageDataItemDto>>() {
+        List<IndexedDataItemDto> theList = jsonObjectMapper.readValue(strBody,
+                new TypeReference<List<IndexedDataItemDto>>() {
                 }
         );
 
-        for (ImageDataItemDto item : theList) {
+        for (IndexedDataItemDto item : theList) {
             logger.info("Read item: {}", item);
 
             IndexedDataItemEntity itemEntity = new IndexedDataItemEntity();
@@ -200,5 +200,10 @@ public class ImageDataStorageService01 implements ImageDataStorageService {
         ImageEntity entity = getImageFaceEntity(headers, false);
         logger.info("### SAVING: {} {}", entity.getClass().getSimpleName(), jsonObjectMapper.writeValueAsString(entity));
         imageRepository.save(entity);
+    }
+
+    @Override
+    public ImageDto getById(UUID uuid) {
+        return null;
     }
 }

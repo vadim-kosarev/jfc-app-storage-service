@@ -2,7 +2,10 @@ package dev.vk.jfc.app.storage.appstorage.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
+import dev.vk.jfc.app.storage.appstorage.dto.FaceBox;
+import dev.vk.jfc.app.storage.appstorage.dto.ImageDto;
+import dev.vk.jfc.app.storage.appstorage.dto.ImagePoint;
+import dev.vk.jfc.app.storage.appstorage.dto.IndexedDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
@@ -68,9 +71,9 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
         ImageEntity imageEntity = imageRepository.findById(uuid).orElseGet(ImageEntity::new);
         if (imageEntity.getId() == null) {
             imageEntity.setId(uuid);
-            imageEntity.setLabel("Created as new: %s".formatted(uuid));
+            imageEntity.setLabel("Created ImageEntity as new: %s".formatted(uuid));
         } else {
-            imageEntity.setLabel("Found from DB: %s".formatted(uuid));
+            imageEntity.setLabel("Found ImageEntity from DB: %s".formatted(uuid));
         }
         if (imageEntity.getElements() == null) {
             imageEntity.setElements(new ArrayList<>());
@@ -120,14 +123,14 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
         me.setImageEntity(parentImageEntity);
 
         // ####
-        List<ImageDataItemDto> theList =
+        List<IndexedDataItemDto> theList =
                 jsonObjectMapper.readValue(
                         payload,
-                        new TypeReference<List<ImageDataItemDto>>() {
+                        new TypeReference<List<IndexedDataItemDto>>() {
                         }
                 );
 
-        for (ImageDataItemDto item : theList) {
+        for (IndexedDataItemDto item : theList) {
 //            logger.info("Read item: {}", item);
 
             IndexedDataItemEntity itemEntity = new IndexedDataItemEntity();
@@ -168,5 +171,25 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
         }
 
         return entity;
+    }
+
+    @Override
+    public ImageDto getById(UUID uuid) {
+        ImageEntity entity = imageRepository.findById(uuid).orElseThrow();
+        IndexedDataEntity dataEntity = entity.getIndexedDataEntity();
+        for (BaseEntity be : dataEntity.getElements()) {
+            IndexedDataItemEntity die = (IndexedDataItemEntity) be;
+
+            die.getFaceVector().sort((o1, o2) -> o1.getItemId().getInd() - o2.getItemId().getInd());
+            IndexedDataItemDto dit = modelMapper.map(die, IndexedDataItemDto.class);
+
+                              // ###
+            dit.setFaceBox(new FaceBox(
+                    new ImagePoint(die.getImgBox_p1_x(), die.getImgBox_p1_y()),
+                    new ImagePoint(die.getImgBox_p2_x(), die.getImgBox_p2_y())
+            ));
+        }
+        ImageDto dto = modelMapper.map(entity, ImageDto.class);
+        return dto;
     }
 }

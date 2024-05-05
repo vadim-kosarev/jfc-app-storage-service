@@ -2,7 +2,7 @@ package dev.vk.jfc.app.storage.appstorage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.vk.jfc.app.storage.appstorage.dto.ImageDataItemDto;
+import dev.vk.jfc.app.storage.appstorage.dto.IndexedDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,7 +49,7 @@ public class JsonTests {
     @SneakyThrows
     void testJSON_00() {
         URL dataSrc = new URL(null, "classpath:json-test-00.json", new Handler(ClassLoader.getSystemClassLoader()));
-        ImageDataItemDto obj = objectMapper.readValue(dataSrc, ImageDataItemDto.class);
+        IndexedDataItemDto obj = objectMapper.readValue(dataSrc, IndexedDataItemDto.class);
         logger.info("+++ Object: {}", obj);
 
         IndexedDataItemEntity entity = modelWrapper.map(obj, IndexedDataItemEntity.class);
@@ -61,9 +61,9 @@ public class JsonTests {
     @Test
     void testJSON() {
         URL dataSrc = new URL(null, "classpath:json-test-01.json", new Handler(ClassLoader.getSystemClassLoader()));
-        //List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc, List.class);
-        List<ImageDataItemDto> obj = objectMapper.readValue(dataSrc,
-                new TypeReference<List<ImageDataItemDto>>() {}
+        //List<IndexedDataItemDto> obj = objectMapper.readValue(dataSrc, List.class);
+        List<IndexedDataItemDto> obj = objectMapper.readValue(dataSrc,
+                new TypeReference<List<IndexedDataItemDto>>() {}
         );
         logger.info("obj: {}", obj);
     }

@@ -3,6 +3,7 @@ package dev.vk.jfc.app.storage.appstorage.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,4 +39,7 @@ public class BaseEntity {
     @Column(name = "created_dt", nullable = false)
     @Nullable
     private Long created_dt = System.currentTimeMillis();
+
+    public BaseEntity() {
+    }
 }

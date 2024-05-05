@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+
 @Entity
 @Table(name = "tbl_float_array_items")
 @Data
@@ -19,4 +21,14 @@ public class FloatArrayItemEntity {
     private ArrayItemId itemId;
 
     private Float val;
+
+    public static class ElementsList extends ArrayList<FloatArrayItemEntity> {
+
+        public ElementsList() {
+        }
+
+        public ElementsList(int initialCapacity) {
+            super(initialCapacity);
+        }
+    }
 }
