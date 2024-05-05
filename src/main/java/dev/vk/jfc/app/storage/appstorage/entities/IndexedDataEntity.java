@@ -13,7 +13,8 @@ import java.util.Collection;
 @Getter
 public class IndexedDataEntity extends HeadersEntity {
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade =
+            {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
     @JoinColumn(name = "image_parent")
     @JsonIgnore
     private ImageEntity imageEntity;

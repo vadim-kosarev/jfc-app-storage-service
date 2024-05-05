@@ -14,6 +14,7 @@ java {
 springBoot {
     buildInfo()
 }
+
 repositories {
     mavenCentral()
 }
@@ -28,6 +29,11 @@ dependencies {
     implementation("org.modelmapper:modelmapper:3.2.0")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
+
+//    implementation("org.springframework.boot:spring-boot-starter-web")
+//    testImplementation("org.springframework.boot:spring-boot-starter-test")
+//    implementation("io.springfox:springfox-swagger2:2.7.0")
+//    implementation("io.springfox:springfox-swagger-ui:2.7.0")
 
     implementation(project(":modules:jfc-common"))
 

@@ -40,7 +40,6 @@ public class IndexedDataItemEntity extends HeadersEntity {
         setMessageType(this.getClass().getSimpleName());
     }
 
-
     // -----------------------------------------------------------------------------------------------------------------
 
 
