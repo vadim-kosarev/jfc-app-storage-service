@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,6 +124,16 @@ public class AppConfig {
         return modelMapper;
     }
 
+    @Bean
+    public Docket productApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+//                .apis(RequestHandlerSelectors.basePackage("dev.vk.jfc.app.storage.appstorage"))
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+
     public static class Prov extends AbstractProvider<FaceBox> {
         @Override
         protected FaceBox get() {
@@ -135,12 +149,5 @@ public class AppConfig {
                     .map(FloatArrayItemEntity::getVal).collect(Collectors.toList());
         }
     }
-
-
-//    @Bean
-//    public Docket productApi() {
-//        return new Docket(DocumentationType.SWAGGER_2).select()
-//                .apis(RequestHandlerSelectors.basePackage("dev.vk.jfc.app.storage.appstorage")).build();
-//    }
 
 }

@@ -30,10 +30,11 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
 
-//    implementation("org.springframework.boot:spring-boot-starter-web")
-//    testImplementation("org.springframework.boot:spring-boot-starter-test")
-//    implementation("io.springfox:springfox-swagger2:2.7.0")
-//    implementation("io.springfox:springfox-swagger-ui:2.7.0")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.4")
+    implementation("io.springfox:springfox-swagger2:3.0.0")
+    implementation("io.springfox:springfox-swagger-ui:3.0.0")
+    implementation("javax.servlet:servlet-api:2.5")
 
     implementation(project(":modules:jfc-common"))
 
