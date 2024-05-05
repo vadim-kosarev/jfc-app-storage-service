@@ -11,6 +11,9 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
+springBoot {
+    buildInfo()
+}
 repositories {
     mavenCentral()
 }
@@ -26,8 +29,10 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
 
-
     implementation(project(":modules:jfc-common"))
+
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     compileOnly("org.projectlombok:lombok")
 
@@ -39,12 +44,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.amqp:spring-rabbit-test")
     testImplementation("org.projectlombok:lombok")
-//    testImplementation("io.minio:minio:8.5.9")
-//    testImplementation("org.javatuples:javatuples:1.2")
-//    testImplementation("org.aspectj:aspectjrt")
-//    testImplementation("com.jcabi:jcabi-aspects:0.25.1")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+

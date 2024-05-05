@@ -3,6 +3,7 @@ package dev.vk.jfc.app.storage.appstorage.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,14 +28,18 @@ public class BaseEntity {
     private String label;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "base_object_parent")
+    @JoinColumn(name = "base_parent")
     @JsonIgnore
     private BaseEntity container;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "container", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BaseEntity> elements;
 
     @Column(name = "created_dt", nullable = false)
     @Nullable
     private Long created_dt = System.currentTimeMillis();
+
+    public BaseEntity() {
+    }
 }

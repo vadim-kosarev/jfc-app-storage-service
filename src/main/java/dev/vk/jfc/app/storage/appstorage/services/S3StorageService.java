@@ -1,25 +1,23 @@
 package dev.vk.jfc.app.storage.appstorage.services;
 
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.*;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 @Service
 @AllArgsConstructor
-public class S3StorageService {
+public class S3StorageService implements StorageService {
 
     private final MinioClient minioClient;
 
     @SneakyThrows
-    public void putObject(String s3Path, byte[] body)  {
+    @Override
+    public void putObject(String s3Path, byte[] body) {
         long partSize = 5 * 1024 * 1024;
         minioClient.putObject(PutObjectArgs
                 .builder()
@@ -30,4 +28,14 @@ public class S3StorageService {
                 .build());
     }
 
+    @SneakyThrows
+    @Override
+    public byte[] getObject(String s3Path) {
+        return minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket("jpgdata")
+                        .object(s3Path)
+                        .build()
+        ).readAllBytes();
+    }
 }

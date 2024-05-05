@@ -32,8 +32,7 @@ public class IndexedDataReceiver {
 
         logger.info("{}: uuid: {}, parent: {}", messageType, msgUuid, msgParentUuid);
 
-        imageDataStorageService.onIndexedData(message);
-
+        imageDataStorageService.onIndexedDataMessage(headers, message.getBody());
     }
 
 }
