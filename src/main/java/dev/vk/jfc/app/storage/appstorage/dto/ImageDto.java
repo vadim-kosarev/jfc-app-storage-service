@@ -20,6 +20,7 @@ public class ImageDto {
     private String messageType;
     private String label;
     private UUID id;
+    private String container;
 
     private List<ImageDto> elements;
     private Long created_dt;
