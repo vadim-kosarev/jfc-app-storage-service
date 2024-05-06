@@ -9,6 +9,7 @@ import dev.vk.jfc.app.storage.appstorage.dto.IndexedDataItemDto;
 import dev.vk.jfc.app.storage.appstorage.entities.*;
 import dev.vk.jfc.app.storage.appstorage.entities.data.ArrayItemId;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
+import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataItemRepository;
 import dev.vk.jfc.app.storage.appstorage.repository.IndexedDataRepository;
 import dev.vk.jfc.jfccommon.Jfc;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
 
     private final ImageRepository imageRepository;
     private final IndexedDataRepository indexedDataRepository;
+    private final IndexedDataItemRepository indexedDataItemRepository;
     private final ObjectMapper jsonObjectMapper;
     private final ModelMapper modelMapper;
 
@@ -114,12 +116,17 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
         logger.info("onIndexedDataMessage");
         UUID uuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_UUID)));
         IndexedDataEntity me = getIndexedDataEntity(uuid);
+        for (BaseEntity elem : me.getElements()) {
+            indexedDataItemRepository.deleteById(elem.getId());
+        }
+        me.setElements(new ArrayList<BaseEntity>());
         fillInHeaderData(me, headers);
 
         logger.info("Entity: {}", me);
 
         UUID parentUuid = UUID.fromString(String.valueOf(headers.get(Jfc.K_PARENT_UUID)));
         ImageEntity parentImageEntity = getImageEntity(headers, parentUuid);
+        parentImageEntity = imageRepository.save(parentImageEntity);
         me.setImageEntity(parentImageEntity);
 
         // ####
@@ -131,7 +138,6 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
                 );
 
         for (IndexedDataItemDto item : theList) {
-//            logger.info("Read item: {}", item);
 
             IndexedDataItemEntity itemEntity = new IndexedDataItemEntity();
             itemEntity.setId(UUID.randomUUID());
@@ -140,6 +146,7 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
 
             int cnt = 0;
             itemEntity.setFaceVector(new ArrayList<>());
+
             for (float fData : item.getFaceVector()) {
 
                 itemEntity.getFaceVector().add(
@@ -149,7 +156,8 @@ public class ImageDataStorageService02 implements ImageDataStorageService {
                 );
 
             }
-            logger.info("itemEntity: {}", jsonObjectMapper.writeValueAsString(itemEntity));
+            logger.info("Adding itemEntity: {}", itemEntity.getId());
+
             me.getElements().add(itemEntity);
             itemEntity.setContainer(me);
         }

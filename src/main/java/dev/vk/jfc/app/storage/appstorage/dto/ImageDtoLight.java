@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class ImageDto {
-
+public class ImageDtoLight {
     private Long brokerTimestamp;
     private Long timestamp;
     private Integer frameNo;
@@ -21,10 +20,5 @@ public class ImageDto {
     private String label;
     private UUID id;
     private String container;
-
-    private List<ImageDto> elements;
     private Long created_dt;
-
-    private IndexedDataDto indexedData;
-
 }

@@ -19,16 +19,6 @@ public class FloatArrayItemEntity {
 
     @EmbeddedId
     private ArrayItemId itemId;
-
     private Float val;
 
-    public static class ElementsList extends ArrayList<FloatArrayItemEntity> {
-
-        public ElementsList() {
-        }
-
-        public ElementsList(int initialCapacity) {
-            super(initialCapacity);
-        }
-    }
 }

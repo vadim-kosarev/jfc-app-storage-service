@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vk.jfc.app.storage.appstorage.dto.FaceBox;
 import dev.vk.jfc.app.storage.appstorage.dto.FloatArrayItemDto;
 import dev.vk.jfc.app.storage.appstorage.dto.IndexedDataItemDto;
+import dev.vk.jfc.app.storage.appstorage.entities.BaseEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.FloatArrayItemEntity;
+import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.entities.IndexedDataItemEntity;
 import io.minio.MinioClient;
 import org.modelmapper.*;
@@ -15,8 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -106,6 +113,16 @@ public class AppConfig {
         modelMapper.addConverter(convFf);
 
         // -------------------------------------------------------------------------------------------------------------
+        Converter<BaseEntity, String> uuidConv = new Converter<BaseEntity, String>() {
+            @Override
+            public String convert(MappingContext<BaseEntity, String> mappingContext) {
+                if (mappingContext.getSource() == null) return null;
+                else return mappingContext.getSource().getId().toString();
+            }
+        };
+        modelMapper.addConverter(uuidConv);
+
+        // -------------------------------------------------------------------------------------------------------------
         PropertyMap<FloatArrayItemEntity, FloatArrayItemDto> floatItemMap =
                 new PropertyMap<FloatArrayItemEntity, FloatArrayItemDto>() {
                     @Override
@@ -118,6 +135,16 @@ public class AppConfig {
 
         // -------------------------------------------------------------------------------------------------------------
         return modelMapper;
+    }
+
+    @Bean
+    public Docket productApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+//                .apis(RequestHandlerSelectors.basePackage("dev.vk.jfc.app.storage.appstorage"))
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
     }
 
     public static class Prov extends AbstractProvider<FaceBox> {
