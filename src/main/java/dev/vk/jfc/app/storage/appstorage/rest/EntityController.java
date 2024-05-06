@@ -1,6 +1,7 @@
 package dev.vk.jfc.app.storage.appstorage.rest;
 
 import dev.vk.jfc.app.storage.appstorage.dto.ImageDto;
+import dev.vk.jfc.app.storage.appstorage.dto.ImageDtoLight;
 import dev.vk.jfc.app.storage.appstorage.entities.ImageEntity;
 import dev.vk.jfc.app.storage.appstorage.repository.ImageRepository;
 import dev.vk.jfc.app.storage.appstorage.services.ImageDataStorageService01;
@@ -32,17 +33,17 @@ public class EntityController {
         ImageEntity entity = imageRepository.findById(uuid).orElseThrow();
 
         ImageDto dto = modelMapper.map(entity, ImageDto.class);
-        
+
         return dto;
     }
 
     @GetMapping(value = "/image-entities", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<ImageDto> listAllImageEntity() {
+    public List<ImageDtoLight> listAllImageEntity() {
         List<ImageEntity> entities = imageRepository.findRoots();
 
-        Type listType = new TypeToken<List<ImageDto>>() {}.getType();
-        List<ImageDto> theList = modelMapper.map(entities, listType);
+        Type listType = new TypeToken<List<ImageDtoLight>>() {}.getType();
+        List<ImageDtoLight> theList = modelMapper.map(entities, listType);
 
         return theList;
     }
