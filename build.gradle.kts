@@ -1,6 +1,7 @@
 plugins {
     java
     id("org.springframework.boot") version "3.2.4"
+//    id("org.springframework.boot") version "2.6.15"
     id("io.spring.dependency-management") version "1.1.4"
 }
 
@@ -35,6 +36,7 @@ dependencies {
     implementation("io.springfox:springfox-swagger2:3.0.0")
     implementation("io.springfox:springfox-swagger-ui:3.0.0")
     implementation("javax.servlet:servlet-api:2.5")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
     implementation(project(":modules:jfc-common"))
 
