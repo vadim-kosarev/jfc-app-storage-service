@@ -1,0 +1,128 @@
+{
+    "vhosts": [
+        {
+            "name": "${spring.rabbitmq.virtual-host}"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "${app.rabbitmq.definitions.username}",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "queues": [
+        {
+            "name": "q-indexed-images",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-message-ttl": 300000
+            }
+        },
+        {
+            "name": "q-input-images",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-message-ttl": 300000,
+                "x-queue-type": "classic"
+            }
+        },
+        {
+            "name": "q-indexed-data",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-message-ttl": 300000
+            }
+        },
+        {
+            "name": "q-input-faces-data",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-message-ttl": 300000,
+                "x-queue-type": "classic"
+            }
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "x-faces-input",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "x-indexed-data",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "x-images-input",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "x-indexed-images",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "x-faces-input",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "destination": "q-input-faces-data",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "x-images-input",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "destination": "q-input-images",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "x-indexed-data",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "destination": "q-indexed-data",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        },
+        {
+            "source": "x-indexed-images",
+            "vhost": "${spring.rabbitmq.virtual-host}",
+            "destination": "q-indexed-images",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        }
+    ]
+}

@@ -30,6 +30,7 @@ dependencies {
     implementation("org.modelmapper:modelmapper:3.2.0")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
+    implementation("org.apache.commons:commons-text:1.12.0")
 
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.4")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.4")
