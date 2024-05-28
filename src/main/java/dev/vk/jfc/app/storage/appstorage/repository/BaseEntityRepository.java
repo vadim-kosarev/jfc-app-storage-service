@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-public interface BaseObjectRepository extends CrudRepository<BaseEntity, UUID> {
+public interface BaseEntityRepository extends CrudRepository<BaseEntity, UUID> {
 
     BaseEntity save(BaseEntity baseEntity);
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +24,9 @@ public class BaseEntity {
     @Id
     @Column(name = "base_id")
     private UUID id;
+
+    @Version
+    private Timestamp version;
 
     @Column(name = "base_label")
     private String label;

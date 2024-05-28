@@ -23,7 +23,7 @@ public class TestCommand implements CommandLineRunner {
     private static final AtomicInteger cnt = new AtomicInteger(0);
     private final ContainedRepository containedRepository;
     private final ChildRepository childRepository;
-    private final BaseObjectRepository baseObjectRepository;
+    private final BaseEntityRepository baseObjectRepository;
     private final ImageRepository imageRepository;
 
     protected Pair<UUID, UUID> step01_1(Container ssParent) {
